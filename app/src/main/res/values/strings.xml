@@ -1,3 +1,48 @@
 <resources>
-    <string name="app_name">AplicacionesMoviles</string>
+    <string name="app_name">Super Ahorro</string>
+
+    <string name="common_currency_symbol">$</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="nav_chat">Chat</string>
+
+    <string name="splash_title">Super Ahorro</string>
+    <string name="splash_subtitle">Tu control diario de compras</string>
+
+    <string name="auth_login_title">Iniciar sesion</string>
+    <string name="auth_register_title">Crear cuenta</string>
+    <string name="auth_forgot_title">Recuperar contrasena</string>
+    <string name="auth_email_label">Correo electronico</string>
+    <string name="auth_password_label">Contrasena</string>
+    <string name="auth_name_label">Nombre completo</string>
+    <string name="auth_login_button">Ingresar</string>
+    <string name="auth_register_button">Registrarme</string>
+    <string name="auth_register_action">No tengo cuenta</string>
+    <string name="auth_forgot_password_action">Olvide mi contrasena</string>
+    <string name="auth_back_to_login_action">Volver al login</string>
+    <string name="auth_recover_button">Enviar recuperacion</string>
+    <string name="auth_recover_success">Te enviamos un correo de recuperacion.</string>
+
+    <string name="home_welcome">Hola, %1$s</string>
+    <string name="home_budget_title">Presupuesto mensual estimado</string>
+    <string name="home_budget_value">%1$s</string>
+    <string name="home_latest_purchases_title">Ultimas compras</string>
+    <string name="home_open_chat_button">Consultar</string>
+
+    <string name="profile_title">Mi perfil</string>
+    <string name="profile_name_label">Nombre</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_city_label">Ciudad</string>
+
+    <string name="settings_title">Configuracion</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_monthly_summary">Resumen mensual</string>
+    <string name="settings_email_button">Enviar consulta por email</string>
+    <string name="settings_email_subject">Consulta desde Super Ahorro</string>
+
+    <string name="chat_title">Asistente de consumos</string>
+    <string name="chat_input_label">Escribe tu consulta</string>
+    <string name="chat_send_button">Enviar</string>
 </resources>

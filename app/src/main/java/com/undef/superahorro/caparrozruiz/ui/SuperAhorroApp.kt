@@ -6,7 +6,7 @@ import com.undef.superahorro.caparrozruiz.ui.theme.SuperAhorroTheme
 
 @Composable
 fun SuperAhorroApp() {
-    SuperAhorroTheme {
+    SuperAhorroTheme(dynamicColor = false) {
         SuperAhorroNavHost()
     }
 }
