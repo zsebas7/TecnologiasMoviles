@@ -32,7 +32,7 @@ fun PurchaseDetailScreen(
     val locale = LocalConfiguration.current.locales[0]
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val purchase = uiState.purchases.firstOrNull { it.id == purchaseId }
-    val products = viewModel.productsForPurchase(purchaseId)
+    val products = uiState.productsByPurchaseId[purchaseId].orEmpty()
 
     Column(
         modifier = Modifier

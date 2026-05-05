@@ -31,6 +31,7 @@
     <string name="home_latest_purchases_title">Ultimas compras</string>
     <string name="home_open_chat_button">Consultar</string>
     <string name="home_open_history_button">Ver historial</string>
+    <string name="home_open_new_purchase_button">Nueva compra</string>
 
     <string name="profile_title">Mi perfil</string>
     <string name="profile_name_label">Nombre</string>
@@ -55,6 +56,26 @@
     <string name="purchase_detail_quantity">Cantidad: %1$d</string>
     <string name="purchase_detail_price">Precio: %1$s</string>
     <string name="purchase_detail_back_button">Volver</string>
+
+    <string name="purchase_new_title">Nueva compra</string>
+    <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>
+    <string name="purchase_new_time_label">Hora (hh:mm)</string>
+    <string name="purchase_new_market_label">Comercio o plataforma</string>
+    <string name="purchase_new_total_label">Total</string>
+    <string name="purchase_new_products_title">Productos</string>
+    <string name="purchase_new_add_product_button">Agregar producto</string>
+    <string name="purchase_new_product_quantity">Cantidad: %1$d</string>
+    <string name="purchase_new_product_price">Precio: %1$s</string>
+    <string name="purchase_new_remove_product_button">Quitar</string>
+    <string name="purchase_new_save_button">Guardar compra</string>
+    <string name="purchase_new_back_button">Volver</string>
+
+    <string name="product_new_title">Nuevo producto</string>
+    <string name="product_new_name_label">Nombre</string>
+    <string name="product_new_quantity_label">Cantidad</string>
+    <string name="product_new_price_label">Precio</string>
+    <string name="product_new_add_button">Agregar</string>
+    <string name="product_new_back_button">Volver</string>
 
     <string name="chat_title">Asistente de consumos</string>
     <string name="chat_input_label">Escribe tu consulta</string>
