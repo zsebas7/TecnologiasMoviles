@@ -1,4 +1,4 @@
-package com.caparroz.ruiz.aplicacionesmoviles
+package com.undef.superahorro.caparrozruiz
 
 import org.junit.Test
 
