@@ -11,6 +11,8 @@ object AppRoute {
     const val Chat = "main/chat"
     const val History = "main/history"
     const val PurchaseDetail = "main/purchase/{purchaseId}"
+    const val NewPurchase = "main/purchase/new"
+    const val NewProduct = "main/product/new"
 
     fun purchaseDetailRoute(purchaseId: String): String = "main/purchase/$purchaseId"
 }

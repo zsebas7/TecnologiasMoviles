@@ -14,7 +14,7 @@ data class ProfileUiState(
 
 class ProfileViewModel : ViewModel() {
 
-    private val user = FakeWalletRepository().getCurrentUser()
+    private val user = FakeWalletRepository.getCurrentUser()
 
     private val _uiState = MutableStateFlow(
         ProfileUiState(name = user.name, email = user.email, city = user.city)

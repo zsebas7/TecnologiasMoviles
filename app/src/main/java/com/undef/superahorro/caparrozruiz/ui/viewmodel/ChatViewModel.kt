@@ -15,7 +15,7 @@ data class ChatUiState(
 class ChatViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        ChatUiState(messages = FakeWalletRepository().getInitialChatMessages())
+        ChatUiState(messages = FakeWalletRepository.getInitialChatMessages())
     )
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 

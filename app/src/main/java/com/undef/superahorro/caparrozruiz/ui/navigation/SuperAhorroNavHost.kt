@@ -21,6 +21,8 @@ import com.undef.superahorro.caparrozruiz.ui.screens.chat.ChatScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.history.HistoryScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.history.PurchaseDetailScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.home.HomeScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.purchase.NewProductScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.purchase.NewPurchaseScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.profile.ProfileScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.settings.SettingsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.splash.SplashScreen
@@ -96,7 +98,8 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.Home) {
                 HomeScreen(
                     onOpenChat = { navController.navigate(AppRoute.Chat) },
-                    onOpenHistory = { navController.navigate(AppRoute.History) }
+                    onOpenHistory = { navController.navigate(AppRoute.History) },
+                    onOpenNewPurchase = { navController.navigate(AppRoute.NewPurchase) }
                 )
             }
             composable(AppRoute.History) {
@@ -112,6 +115,19 @@ fun SuperAhorroNavHost() {
                 PurchaseDetailScreen(
                     purchaseId = purchaseId,
                     onBack = { navController.popBackStack() }
+                )
+            }
+            composable(AppRoute.NewPurchase) {
+                NewPurchaseScreen(
+                    onBack = { navController.popBackStack() },
+                    onAddProduct = { navController.navigate(AppRoute.NewProduct) },
+                    onSaved = { navController.popBackStack() }
+                )
+            }
+            composable(AppRoute.NewProduct) {
+                NewProductScreen(
+                    onBack = { navController.popBackStack() },
+                    onProductAdded = { navController.popBackStack() }
                 )
             }
             composable(AppRoute.Profile) {
