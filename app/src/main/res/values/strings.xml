@@ -40,7 +40,9 @@
     <string name="settings_notifications">Notificaciones</string>
     <string name="settings_monthly_summary">Resumen mensual</string>
     <string name="settings_email_button">Enviar consulta por email</string>
+    <string name="settings_email_chooser">Enviar consulta con</string>
     <string name="settings_email_subject">Consulta desde Super Ahorro</string>
+    <string name="settings_logout_button">Cerrar sesion</string>
 
     <string name="chat_title">Asistente de consumos</string>
     <string name="chat_input_label">Escribe tu consulta</string>

@@ -40,7 +40,9 @@
     <string name="settings_notifications">Notifications</string>
     <string name="settings_monthly_summary">Monthly summary</string>
     <string name="settings_email_button">Send support email</string>
+    <string name="settings_email_chooser">Send inquiry with</string>
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
+    <string name="settings_logout_button">Log out</string>
 
     <string name="chat_title">Consumption assistant</string>
     <string name="chat_input_label">Write your question</string>
