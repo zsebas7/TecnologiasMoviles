@@ -9,6 +9,10 @@ object AppRoute {
     const val Profile = "main/profile"
     const val Settings = "main/settings"
     const val Chat = "main/chat"
+    const val History = "main/history"
+    const val PurchaseDetail = "main/purchase/{purchaseId}"
+
+    fun purchaseDetailRoute(purchaseId: String): String = "main/purchase/$purchaseId"
 }
 
 val mainRoutes = setOf(

@@ -36,6 +36,7 @@ import com.undef.superahorro.caparrozruiz.ui.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     onOpenChat: () -> Unit,
+    onOpenHistory: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -109,6 +110,11 @@ fun HomeScreen(
                 purchase = purchase,
                 currencyLabel = stringResource(R.string.common_currency_symbol)
             )
+        }
+        item {
+            Button(onClick = onOpenHistory, modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(R.string.home_open_history_button))
+            }
         }
     }
 }

@@ -15,9 +15,13 @@ import androidx.compose.ui.unit.dp
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
 
 @Composable
-fun PurchaseItem(purchase: Purchase, currencyLabel: String) {
+fun PurchaseItem(
+    purchase: Purchase,
+    currencyLabel: String,
+    modifier: Modifier = Modifier
+) {
     val locale = LocalConfiguration.current.locales[0]
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
