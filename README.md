@@ -12,3 +12,9 @@ Aplicacion Android para registrar y visualizar gastos de supermercado.
 
 - Package: `com.undef.superahorro.caparrozruiz`.
 - Flujo GitFlow: `main`, `develop`, ramas `feature/*`.
+
+## Estructura implementada
+
+- Navegacion principal con `NavHost`: Splash, Login, Registro, Recuperacion, Home, Perfil, Settings y Chat.
+- Patron MVVM con ViewModels por pantalla y repositorio mock compartido.
+- Internacionalizacion lista en `values/strings.xml` y `values-en/strings.xml`.
