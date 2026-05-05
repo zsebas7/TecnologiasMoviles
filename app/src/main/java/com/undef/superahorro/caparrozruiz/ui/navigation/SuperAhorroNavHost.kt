@@ -98,7 +98,14 @@ fun SuperAhorroNavHost() {
                 ProfileScreen()
             }
             composable(AppRoute.Settings) {
-                SettingsScreen()
+                SettingsScreen(
+                    onLogoutClick = {
+                        navController.navigate(AppRoute.Login) {
+                            popUpTo(AppRoute.Home) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
             composable(AppRoute.Chat) {
                 ChatScreen()
