@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,7 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel()) {
             FilledIconButton(
                 onClick = viewModel::sendMessage,
                 modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .padding(start = 8.dp)
                     .aspectRatio(1f)
             ) {
