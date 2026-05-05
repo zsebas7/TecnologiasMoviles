@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -40,27 +41,31 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
         Text(text = stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = stringResource(R.string.settings_notifications))
-            Switch(
-                checked = uiState.notificationsEnabled,
-                onCheckedChange = viewModel::setNotificationsEnabled
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = stringResource(R.string.settings_monthly_summary))
-            Switch(
-                checked = uiState.monthlySummaryEnabled,
-                onCheckedChange = viewModel::setMonthlySummaryEnabled
-            )
+        Card {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = stringResource(R.string.settings_notifications))
+                    Switch(
+                        checked = uiState.notificationsEnabled,
+                        onCheckedChange = viewModel::setNotificationsEnabled
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = stringResource(R.string.settings_monthly_summary))
+                    Switch(
+                        checked = uiState.monthlySummaryEnabled,
+                        onCheckedChange = viewModel::setMonthlySummaryEnabled
+                    )
+                }
+            }
         }
         Button(
             onClick = {
