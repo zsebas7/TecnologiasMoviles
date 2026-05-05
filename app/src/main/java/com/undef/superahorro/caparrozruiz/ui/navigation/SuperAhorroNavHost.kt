@@ -18,6 +18,8 @@ import com.undef.superahorro.caparrozruiz.ui.screens.auth.ForgotPasswordScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.auth.LoginScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.auth.RegisterScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.chat.ChatScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.history.HistoryScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.history.PurchaseDetailScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.home.HomeScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.profile.ProfileScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.settings.SettingsScreen
@@ -92,7 +94,25 @@ fun SuperAhorroNavHost() {
                 ForgotPasswordScreen(onBackToLogin = { navController.popBackStack() })
             }
             composable(AppRoute.Home) {
-                HomeScreen(onOpenChat = { navController.navigate(AppRoute.Chat) })
+                HomeScreen(
+                    onOpenChat = { navController.navigate(AppRoute.Chat) },
+                    onOpenHistory = { navController.navigate(AppRoute.History) }
+                )
+            }
+            composable(AppRoute.History) {
+                HistoryScreen(
+                    onBack = { navController.popBackStack() },
+                    onPurchaseSelected = { purchaseId ->
+                        navController.navigate(AppRoute.purchaseDetailRoute(purchaseId))
+                    }
+                )
+            }
+            composable(AppRoute.PurchaseDetail) { backStackEntry ->
+                val purchaseId = backStackEntry.arguments?.getString("purchaseId").orEmpty()
+                PurchaseDetailScreen(
+                    purchaseId = purchaseId,
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(AppRoute.Profile) {
                 ProfileScreen()
