@@ -19,3 +19,4 @@ Aplicacion Android para registrar y visualizar gastos de supermercado.
 - Patron MVVM con ViewModels por pantalla y repositorio mock compartido.
 - Internacionalizacion lista en `values/strings.xml` y `values-en/strings.xml`.
 - Settings incluye accion de cerrar sesion y consulta por email via Intent.
+- UI refinada con estilo wallet: cards, acentos azules y layouts coherentes entre auth y pantallas principales.

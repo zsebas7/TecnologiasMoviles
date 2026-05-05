@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,22 +32,26 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
     ) {
         Text(text = stringResource(R.string.profile_title), style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(20.dp))
-        AppTextField(
-            value = uiState.name,
-            onValueChange = viewModel::onNameChanged,
-            label = stringResource(R.string.profile_name_label)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        AppTextField(
-            value = uiState.email,
-            onValueChange = viewModel::onEmailChanged,
-            label = stringResource(R.string.profile_email_label)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        AppTextField(
-            value = uiState.city,
-            onValueChange = viewModel::onCityChanged,
-            label = stringResource(R.string.profile_city_label)
-        )
+        Card {
+            Column(modifier = Modifier.padding(16.dp)) {
+                AppTextField(
+                    value = uiState.name,
+                    onValueChange = viewModel::onNameChanged,
+                    label = stringResource(R.string.profile_name_label)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                AppTextField(
+                    value = uiState.email,
+                    onValueChange = viewModel::onEmailChanged,
+                    label = stringResource(R.string.profile_email_label)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                AppTextField(
+                    value = uiState.city,
+                    onValueChange = viewModel::onCityChanged,
+                    label = stringResource(R.string.profile_city_label)
+                )
+            }
+        }
     }
 }
