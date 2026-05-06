@@ -73,7 +73,7 @@ object FakeWalletRepository {
     fun getInitialChatMessages(): List<ChatMessage> {
         return listOf(
             ChatMessage(id = "m1", message = "Hola, soy tu asistente de consumos.", isFromUser = false),
-            ChatMessage(id = "m2", message = "Podes preguntar por precios o historial.", isFromUser = false)
+            ChatMessage(id = "m2", message = "Podés preguntar por precios o historial.", isFromUser = false)
         )
     }
 }

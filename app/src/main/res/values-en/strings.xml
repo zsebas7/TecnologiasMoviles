@@ -4,6 +4,7 @@
     <string name="common_currency_symbol">$</string>
 
     <string name="nav_home">Home</string>
+    <string name="nav_new_purchase">Add</string>
     <string name="nav_profile">Profile</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_chat">Chat</string>
@@ -43,6 +44,8 @@
     <string name="settings_email_chooser">Send inquiry with</string>
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
     <string name="settings_logout_button">Log out</string>
+
+    <string name="purchase_new_computed_total_label">Products-based total</string>
 
     <string name="chat_title">Consumption assistant</string>
     <string name="chat_input_label">Write your question</string>

@@ -1,22 +1,22 @@
 # Super Ahorro
 
-Aplicacion Android para registrar y visualizar gastos de supermercado.
+Aplicación Android para registrar y visualizar gastos de supermercado.
 
 ## Primera entrega (UI)
 
-- Flujo de identidad: Splash, Login, Registro y Olvide mi contrasena.
-- Modulo principal: Home con ultimas compras, Mi Perfil, Settings y Chat opcional.
-- Tecnologias: Jetpack Compose, Navigation Compose, MVVM con mock data, Intents y corrutinas.
+- Flujo de identidad: Splash, Login, Registro y Olvidé mi contraseña.
+- Módulo principal: Home con últimas compras, Mi Perfil, Settings y Chat opcional.
+- Tecnologías: Jetpack Compose, Navigation Compose, MVVM con mock data, Intents y corrutinas.
 
-## Configuracion base
+## Configuración base
 
 - Package: `com.undef.superahorro.caparrozruiz`.
 - Flujo GitFlow: `main`, `develop`, ramas `feature/*`.
 
 ## Estructura implementada
 
-- Navegacion principal con `NavHost`: Splash, Login, Registro, Recuperacion, Home, Perfil, Settings y Chat.
-- Patron MVVM con ViewModels por pantalla y repositorio mock compartido.
-- Internacionalizacion lista en `values/strings.xml` y `values-en/strings.xml`.
-- Settings incluye accion de cerrar sesion y consulta por email via Intent.
+- Navegación principal con `NavHost`: Splash, Login, Registro, Recuperación, Home, Perfil, Settings y Chat.
+- Patrón MVVM con ViewModels por pantalla y repositorio mock compartido.
+- Internacionalización lista en `values/strings.xml` y `values-en/strings.xml`.
+- Settings incluye acción de cerrar sesión y consulta por email vía Intent.
 - UI refinada con estilo wallet: cards, acentos azules y layouts coherentes entre auth y pantallas principales.

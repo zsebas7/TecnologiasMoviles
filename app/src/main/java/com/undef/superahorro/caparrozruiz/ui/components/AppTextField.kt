@@ -14,13 +14,15 @@ fun AppTextField(
     onValueChange: (String) -> Unit,
     label: String,
     singleLine: Boolean = true,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(text = label) },
         singleLine = singleLine,
+        readOnly = readOnly,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         modifier = Modifier.fillMaxWidth()
     )

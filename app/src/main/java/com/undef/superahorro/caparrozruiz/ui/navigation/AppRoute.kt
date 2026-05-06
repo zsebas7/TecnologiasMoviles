@@ -19,6 +19,7 @@ object AppRoute {
 
 val mainRoutes = setOf(
     AppRoute.Home,
+    AppRoute.NewPurchase,
     AppRoute.Profile,
     AppRoute.Settings,
     AppRoute.Chat

@@ -104,7 +104,6 @@ fun SuperAhorroNavHost() {
             }
             composable(AppRoute.History) {
                 HistoryScreen(
-                    onBack = { navController.popBackStack() },
                     onPurchaseSelected = { purchaseId ->
                         navController.navigate(AppRoute.purchaseDetailRoute(purchaseId))
                     }
@@ -113,20 +112,17 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.PurchaseDetail) { backStackEntry ->
                 val purchaseId = backStackEntry.arguments?.getString("purchaseId").orEmpty()
                 PurchaseDetailScreen(
-                    purchaseId = purchaseId,
-                    onBack = { navController.popBackStack() }
+                    purchaseId = purchaseId
                 )
             }
             composable(AppRoute.NewPurchase) {
                 NewPurchaseScreen(
-                    onBack = { navController.popBackStack() },
                     onAddProduct = { navController.navigate(AppRoute.NewProduct) },
                     onSaved = { navController.popBackStack() }
                 )
             }
             composable(AppRoute.NewProduct) {
                 NewProductScreen(
-                    onBack = { navController.popBackStack() },
                     onProductAdded = { navController.popBackStack() }
                 )
             }
