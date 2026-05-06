@@ -3,9 +3,9 @@ package com.undef.superahorro.caparrozruiz.ui.screens.chat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -55,19 +55,22 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel()) {
                 }
             }
         }
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             OutlinedTextField(
                 value = uiState.input,
                 onValueChange = viewModel::onInputChanged,
                 label = { Text(stringResource(R.string.chat_input_label)) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                singleLine = true
             )
             FilledIconButton(
                 onClick = viewModel::sendMessage,
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
                     .padding(start = 8.dp)
-                    .aspectRatio(1f)
+                    .size(44.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,

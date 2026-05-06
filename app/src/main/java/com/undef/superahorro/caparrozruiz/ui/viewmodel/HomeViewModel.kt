@@ -33,7 +33,7 @@ class HomeViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             repository.purchasesFlow().collectLatest { purchases ->
-                _uiState.value = _uiState.value.copy(purchases = purchases)
+                _uiState.value = _uiState.value.copy(purchases = purchases.take(5))
             }
         }
     }

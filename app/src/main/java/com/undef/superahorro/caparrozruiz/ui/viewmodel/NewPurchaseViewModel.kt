@@ -18,7 +18,7 @@ data class NewPurchaseUiState(
     val date: String = "",
     val time: String = "",
     val market: String = "",
-    val total: String = "",
+    val computedTotal: Double = 0.0,
     val products: List<Product> = emptyList(),
     val isSaving: Boolean = false
 )
@@ -49,7 +49,11 @@ class NewPurchaseViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             repository.draftProductsFlow().collectLatest { products ->
-                _purchaseState.value = _purchaseState.value.copy(products = products)
+                val computedTotal = products.sumOf { it.price * it.quantity }
+                _purchaseState.value = _purchaseState.value.copy(
+                    products = products,
+                    computedTotal = computedTotal
+                )
             }
         }
     }
@@ -64,10 +68,6 @@ class NewPurchaseViewModel : ViewModel() {
 
     fun onMarketChanged(value: String) {
         _purchaseState.value = _purchaseState.value.copy(market = value)
-    }
-
-    fun onTotalChanged(value: String) {
-        _purchaseState.value = _purchaseState.value.copy(total = value)
     }
 
     fun onProductNameChanged(value: String) {
@@ -85,6 +85,7 @@ class NewPurchaseViewModel : ViewModel() {
     fun addProduct(onAdded: () -> Unit) {
         val quantity = _productState.value.quantity.toIntOrNull() ?: 0
         val price = _productState.value.price.toDoubleOrNull() ?: 0.0
+        if (_productState.value.name.isBlank() || quantity <= 0 || price <= 0.0) return
         val product = Product(
             id = "DRAFT-${System.currentTimeMillis()}",
             code = "",
@@ -104,8 +105,11 @@ class NewPurchaseViewModel : ViewModel() {
 
     fun savePurchase(onSaved: () -> Unit) {
         viewModelScope.launch {
+            if (_purchaseState.value.market.isBlank() || _purchaseState.value.products.isEmpty()) {
+                return@launch
+            }
             _purchaseState.value = _purchaseState.value.copy(isSaving = true)
-            val totalValue = _purchaseState.value.total.toDoubleOrNull() ?: 0.0
+            val totalValue = _purchaseState.value.computedTotal
             val purchase = Purchase(
                 id = "P-${System.currentTimeMillis()}",
                 market = _purchaseState.value.market,

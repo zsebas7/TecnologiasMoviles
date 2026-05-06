@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +25,6 @@ import com.undef.superahorro.caparrozruiz.ui.viewmodel.HistoryViewModel
 @Composable
 fun PurchaseDetailScreen(
     purchaseId: String,
-    onBack: () -> Unit,
     viewModel: HistoryViewModel = viewModel()
 ) {
     val locale = LocalConfiguration.current.locales[0]
@@ -75,8 +73,5 @@ fun PurchaseDetailScreen(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onBack) {
-            Text(text = stringResource(R.string.purchase_detail_back_button))
-        }
     }
 }

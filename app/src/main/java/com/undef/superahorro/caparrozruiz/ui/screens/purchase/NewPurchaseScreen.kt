@@ -23,14 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
-import androidx.compose.ui.text.input.KeyboardType
 import com.undef.superahorro.caparrozruiz.ui.components.AppTextField
 import com.undef.superahorro.caparrozruiz.ui.components.PrimaryButton
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.NewPurchaseViewModel
+import java.util.Locale
 
 @Composable
 fun NewPurchaseScreen(
-    onBack: () -> Unit,
     onAddProduct: () -> Unit,
     onSaved: () -> Unit,
     viewModel: NewPurchaseViewModel = viewModel()
@@ -62,10 +61,10 @@ fun NewPurchaseScreen(
                     label = stringResource(R.string.purchase_new_market_label)
                 )
                 AppTextField(
-                    value = uiState.total,
-                    onValueChange = viewModel::onTotalChanged,
-                    label = stringResource(R.string.purchase_new_total_label),
-                    keyboardType = KeyboardType.Number
+                    value = String.format(Locale.US, "%.2f", uiState.computedTotal),
+                    onValueChange = {},
+                    label = stringResource(R.string.purchase_new_computed_total_label),
+                    readOnly = true
                 )
             }
         }
@@ -81,7 +80,10 @@ fun NewPurchaseScreen(
             }
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             items(uiState.products, key = { it.id }) { product ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -105,8 +107,5 @@ fun NewPurchaseScreen(
             loading = uiState.isSaving,
             onClick = { viewModel.savePurchase(onSaved) }
         )
-        Button(onClick = onBack) {
-            Text(text = stringResource(R.string.purchase_new_back_button))
-        }
     }
 }
