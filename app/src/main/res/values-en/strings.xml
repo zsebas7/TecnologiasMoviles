@@ -8,7 +8,8 @@
     <string name="nav_profile">Profile</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_chat">Chat</string>
-    <string name="nav_stats">Stats</string>
+    <string name="nav_stats">Spend</string>
+    <string name="nav_more">More</string>
 
     <string name="splash_title">Super Ahorro</string>
     <string name="splash_subtitle">Your daily shopping control</string>
@@ -32,6 +33,8 @@
     <string name="home_budget_value">%1$s</string>
     <string name="home_latest_purchases_title">Latest purchases</string>
     <string name="home_open_chat_button">Ask</string>
+    <string name="home_open_history_button">View history</string>
+    <string name="home_open_new_purchase_button">New purchase</string>
 
     <string name="profile_title">My profile</string>
     <string name="profile_name_label">Name</string>
@@ -46,7 +49,50 @@
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
     <string name="settings_logout_button">Log out</string>
 
+    <string name="history_title">Purchase history</string>
+    <string name="history_subtitle">Ordered by date</string>
+    <string name="history_edit_button">Edit</string>
+    <string name="history_delete_button">Delete</string>
+    <string name="history_confirm_delete_title">Delete purchase</string>
+    <string name="history_confirm_delete_message">Confirm delete this purchase?</string>
+    <string name="history_edit_title">Edit purchase</string>
+
+    <string name="purchase_detail_title">Purchase detail</string>
+    <string name="purchase_detail_total">Total: %1$s</string>
+    <string name="purchase_detail_products_title">Products</string>
+    <string name="purchase_detail_quantity">Quantity: %1$d</string>
+    <string name="purchase_detail_price">Price: %1$s</string>
+    <string name="purchase_detail_date_time">%1$s - %2$s</string>
+    <string name="purchase_detail_edit_button">Edit purchase</string>
+    <string name="purchase_detail_delete_button">Delete purchase</string>
+    <string name="purchase_detail_edit_product_button">Edit product</string>
+    <string name="purchase_detail_delete_product_button">Delete product</string>
+    <string name="purchase_detail_edit_product_title">Edit product</string>
+    <string name="purchase_detail_product_code">Code: %1$s</string>
+
+    <string name="purchase_new_title">New purchase</string>
+    <string name="purchase_new_date_label">Date (yyyy-mm-dd)</string>
+    <string name="purchase_new_time_label">Time (hh:mm)</string>
+    <string name="purchase_new_market_label">Store or platform</string>
     <string name="purchase_new_total_label">Total</string>
+    <string name="purchase_new_products_title">Products</string>
+    <string name="purchase_new_add_product_button">Add product</string>
+    <string name="purchase_new_product_quantity">Quantity: %1$d</string>
+    <string name="purchase_new_product_price">Price: %1$s</string>
+    <string name="purchase_new_remove_product_button">Remove</string>
+    <string name="purchase_new_save_button">Save purchase</string>
+    <string name="purchase_new_ticket_title">Purchase receipt</string>
+    <string name="purchase_new_ticket_gallery">Gallery</string>
+    <string name="purchase_new_ticket_camera">Camera</string>
+    <string name="purchase_new_ticket_status">Simulated attachment: %1$s</string>
+
+    <string name="product_new_title">New product</string>
+    <string name="product_new_code_label">Code</string>
+    <string name="product_new_name_label">Name</string>
+    <string name="product_new_description_label">Description</string>
+    <string name="product_new_quantity_label">Quantity</string>
+    <string name="product_new_price_label">Price</string>
+    <string name="product_new_add_button">Add</string>
 
     <string name="chat_title">Consumption assistant</string>
     <string name="chat_input_label">Write your question</string>
@@ -59,7 +105,17 @@
     <string name="stats_chart_title">Spending</string>
     <string name="stats_chart_empty">No data to display</string>
     <string name="stats_chart_value">$ %1$.0f</string>
-    <string name="stats_pie_title">Categories</string>
+    <string name="stats_pie_title">Stores</string>
     <string name="stats_pie_empty">No categories to display</string>
     <string name="stats_pie_item">%1$s: $ %2$.0f</string>
+
+    <string name="more_title">More options</string>
+    <string name="more_profile_title">My profile</string>
+    <string name="more_profile_subtitle">Update your details</string>
+    <string name="more_settings_title">Settings</string>
+    <string name="more_settings_subtitle">Notifications and access</string>
+    <string name="more_open_action">Open</string>
+
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
 </resources>

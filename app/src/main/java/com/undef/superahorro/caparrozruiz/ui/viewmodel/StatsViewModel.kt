@@ -85,7 +85,7 @@ class StatsViewModel : ViewModel() {
     private fun buildCategories(purchases: List<Purchase>): List<CategorySlice> {
         if (purchases.isEmpty()) return emptyList()
 
-        val totals = purchases.groupBy { categoryForMarket(it.market) }
+        val totals = purchases.groupBy { it.market }
             .mapValues { (_, list) -> list.sumOf { it.total } }
 
         val palette = listOf(
@@ -105,22 +105,4 @@ class StatsViewModel : ViewModel() {
         }
     }
 
-    private fun categoryForMarket(market: String): String {
-        val normalized = market.lowercase()
-        return when {
-            normalized.contains("carrefour") ||
-                normalized.contains("disco") ||
-                normalized.contains("coto") ||
-                normalized.contains("dia") -> "Supermercado"
-            normalized.contains("netflix") ||
-                normalized.contains("spotify") ||
-                normalized.contains("cine") -> "Entretenimiento"
-            normalized.contains("uber") ||
-                normalized.contains("cabify") ||
-                normalized.contains("sube") -> "Transporte"
-            normalized.contains("farmacia") ||
-                normalized.contains("salud") -> "Salud"
-            else -> "Otros"
-        }
-    }
 }

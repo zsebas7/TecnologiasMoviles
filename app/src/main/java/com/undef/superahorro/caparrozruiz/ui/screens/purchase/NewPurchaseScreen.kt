@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +28,8 @@ import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.components.AppTextField
 import com.undef.superahorro.caparrozruiz.ui.components.PrimaryButton
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.NewPurchaseViewModel
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun NewPurchaseScreen(
@@ -35,6 +38,7 @@ fun NewPurchaseScreen(
     viewModel: NewPurchaseViewModel = viewModel()
 ) {
     val uiState by viewModel.purchaseState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -62,10 +66,43 @@ fun NewPurchaseScreen(
                 )
                 AppTextField(
                     value = uiState.total,
-                    onValueChange = viewModel::onTotalChanged,
+                    onValueChange = {},
                     label = stringResource(R.string.purchase_new_total_label),
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    readOnly = true
                 )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(text = stringResource(R.string.purchase_new_ticket_title), style = MaterialTheme.typography.titleSmall)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
+                                context.startActivity(intent)
+                                viewModel.setTicketStatus("Galería")
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.purchase_new_ticket_gallery))
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                val intent = Intent("android.media.action.IMAGE_CAPTURE")
+                                context.startActivity(intent)
+                                viewModel.setTicketStatus("Cámara")
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.purchase_new_ticket_camera))
+                        }
+                    }
+                    if (uiState.ticketStatus.isNotBlank()) {
+                        Text(
+                            text = stringResource(
+                                R.string.purchase_new_ticket_status,
+                                uiState.ticketStatus
+                            ),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
             }
         }
 

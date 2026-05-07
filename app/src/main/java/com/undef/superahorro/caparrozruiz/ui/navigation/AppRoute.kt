@@ -8,6 +8,7 @@ object AppRoute {
     const val Home = "main/home"
     const val Profile = "main/profile"
     const val Settings = "main/settings"
+    const val More = "main/more"
     const val Chat = "main/chat"
     const val Stats = "main/stats"
     const val History = "main/history"
@@ -21,8 +22,7 @@ object AppRoute {
 val mainRoutes = setOf(
     AppRoute.Home,
     AppRoute.NewPurchase,
-    AppRoute.Profile,
-    AppRoute.Settings,
+    AppRoute.More,
     AppRoute.Chat,
     AppRoute.Stats
 )

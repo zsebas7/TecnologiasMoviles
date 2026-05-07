@@ -21,11 +21,14 @@ data class NewPurchaseUiState(
     val total: String = "",
     val computedTotal: Double = 0.0,
     val products: List<Product> = emptyList(),
-    val isSaving: Boolean = false
+    val isSaving: Boolean = false,
+    val ticketStatus: String = ""
 )
 
 data class NewProductUiState(
+    val code: String = "",
     val name: String = "",
+    val description: String = "",
     val quantity: String = "",
     val price: String = ""
 )
@@ -85,6 +88,14 @@ class NewPurchaseViewModel : ViewModel() {
         _productState.value = _productState.value.copy(name = value)
     }
 
+    fun onProductCodeChanged(value: String) {
+        _productState.value = _productState.value.copy(code = value)
+    }
+
+    fun onProductDescriptionChanged(value: String) {
+        _productState.value = _productState.value.copy(description = value)
+    }
+
     fun onProductQuantityChanged(value: String) {
         _productState.value = _productState.value.copy(quantity = value)
     }
@@ -93,25 +104,39 @@ class NewPurchaseViewModel : ViewModel() {
         _productState.value = _productState.value.copy(price = value)
     }
 
+    fun setTicketStatus(value: String) {
+        _purchaseState.value = _purchaseState.value.copy(ticketStatus = value)
+    }
+
     fun addProduct(onAdded: () -> Unit) {
         val quantity = _productState.value.quantity.toIntOrNull() ?: 0
         val price = _productState.value.price.toDoubleOrNull() ?: 0.0
         if (_productState.value.name.isBlank() || quantity <= 0 || price <= 0.0) return
         val product = Product(
             id = "DRAFT-${System.currentTimeMillis()}",
-            code = "",
+            code = _productState.value.code,
             name = _productState.value.name,
-            description = "",
+            description = _productState.value.description,
             quantity = quantity,
             price = price
         )
         repository.addDraftProduct(product)
+        val computedTotal = repository.draftProductsFlow().value.sumOf { it.price * it.quantity }
+        _purchaseState.value = _purchaseState.value.copy(
+            total = "%.2f".format(computedTotal),
+            computedTotal = computedTotal
+        )
         _productState.value = NewProductUiState()
         onAdded()
     }
 
     fun removeDraftProduct(productId: String) {
         repository.removeDraftProduct(productId)
+        val computedTotal = repository.draftProductsFlow().value.sumOf { it.price * it.quantity }
+        _purchaseState.value = _purchaseState.value.copy(
+            total = if (computedTotal > 0.0) "%.2f".format(computedTotal) else "",
+            computedTotal = computedTotal
+        )
     }
 
     fun savePurchase(onSaved: () -> Unit) {
@@ -127,6 +152,7 @@ class NewPurchaseViewModel : ViewModel() {
                 id = "P-${System.currentTimeMillis()}",
                 market = _purchaseState.value.market,
                 date = _purchaseState.value.date,
+                time = _purchaseState.value.time,
                 total = totalValue
             )
             repository.addPurchase(purchase, _purchaseState.value.products)

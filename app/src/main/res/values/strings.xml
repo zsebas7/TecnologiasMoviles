@@ -8,7 +8,8 @@
     <string name="nav_profile">Perfil</string>
     <string name="nav_settings">Ajustes</string>
     <string name="nav_chat">Chat</string>
-    <string name="nav_stats">Stats</string>
+    <string name="nav_stats">Gastos</string>
+    <string name="nav_more">Más</string>
 
     <string name="splash_title">Super Ahorro</string>
     <string name="splash_subtitle">Tu control diario de compras</string>
@@ -50,12 +51,24 @@
 
     <string name="history_title">Historial de compras</string>
     <string name="history_subtitle">Ordenadas por fecha</string>
+    <string name="history_edit_button">Editar</string>
+    <string name="history_delete_button">Eliminar</string>
+    <string name="history_confirm_delete_title">Eliminar compra</string>
+    <string name="history_confirm_delete_message">¿Confirmas eliminar esta compra?</string>
+    <string name="history_edit_title">Editar compra</string>
 
     <string name="purchase_detail_title">Detalle de compra</string>
     <string name="purchase_detail_total">Total: %1$s</string>
     <string name="purchase_detail_products_title">Productos</string>
     <string name="purchase_detail_quantity">Cantidad: %1$d</string>
     <string name="purchase_detail_price">Precio: %1$s</string>
+    <string name="purchase_detail_date_time">%1$s - %2$s</string>
+    <string name="purchase_detail_edit_button">Editar compra</string>
+    <string name="purchase_detail_delete_button">Eliminar compra</string>
+    <string name="purchase_detail_edit_product_button">Editar producto</string>
+    <string name="purchase_detail_delete_product_button">Eliminar producto</string>
+    <string name="purchase_detail_edit_product_title">Editar producto</string>
+    <string name="purchase_detail_product_code">Código: %1$s</string>
 
     <string name="purchase_new_title">Nueva compra</string>
     <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>
@@ -68,9 +81,15 @@
     <string name="purchase_new_product_price">Precio: %1$s</string>
     <string name="purchase_new_remove_product_button">Quitar</string>
     <string name="purchase_new_save_button">Guardar compra</string>
+    <string name="purchase_new_ticket_title">Ticket de compra</string>
+    <string name="purchase_new_ticket_gallery">Galería</string>
+    <string name="purchase_new_ticket_camera">Cámara</string>
+    <string name="purchase_new_ticket_status">Adjunto simulado: %1$s</string>
 
     <string name="product_new_title">Nuevo producto</string>
+    <string name="product_new_code_label">Código</string>
     <string name="product_new_name_label">Nombre</string>
+    <string name="product_new_description_label">Descripción</string>
     <string name="product_new_quantity_label">Cantidad</string>
     <string name="product_new_price_label">Precio</string>
     <string name="product_new_add_button">Agregar</string>
@@ -79,14 +98,24 @@
     <string name="chat_input_label">Escribe tu consulta</string>
     <string name="chat_send_button">Enviar</string>
 
-    <string name="stats_title">Estadisticas</string>
-    <string name="stats_subtitle">Graficos de gastos por periodo</string>
+    <string name="stats_title">Estadísticas</string>
+    <string name="stats_subtitle">Gráficos de gastos por período</string>
     <string name="stats_mode_daily">Diario</string>
     <string name="stats_mode_monthly">Mensual</string>
     <string name="stats_chart_title">Gastos</string>
     <string name="stats_chart_empty">Sin datos para mostrar</string>
     <string name="stats_chart_value">$ %1$.0f</string>
-    <string name="stats_pie_title">Rubros</string>
+    <string name="stats_pie_title">Supermercados</string>
     <string name="stats_pie_empty">Sin rubros para mostrar</string>
     <string name="stats_pie_item">%1$s: $ %2$.0f</string>
+
+    <string name="more_title">Más opciones</string>
+    <string name="more_profile_title">Mi perfil</string>
+    <string name="more_profile_subtitle">Actualiza tus datos</string>
+    <string name="more_settings_title">Configuración</string>
+    <string name="more_settings_subtitle">Notificaciones y accesos</string>
+    <string name="more_open_action">Abrir</string>
+
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_save">Guardar</string>
 </resources>
