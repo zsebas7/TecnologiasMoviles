@@ -35,9 +35,20 @@ fun NewProductScreen(
     ) {
         Text(text = stringResource(R.string.product_new_title), style = MaterialTheme.typography.headlineMedium)
         AppTextField(
+            value = uiState.code,
+            onValueChange = viewModel::onProductCodeChanged,
+            label = stringResource(R.string.product_new_code_label)
+        )
+        AppTextField(
             value = uiState.name,
             onValueChange = viewModel::onProductNameChanged,
             label = stringResource(R.string.product_new_name_label)
+        )
+        AppTextField(
+            value = uiState.description,
+            onValueChange = viewModel::onProductDescriptionChanged,
+            label = stringResource(R.string.product_new_description_label),
+            singleLine = false
         )
         AppTextField(
             value = uiState.quantity,

@@ -18,10 +18,10 @@ object FakeWalletRepository {
     )
 
     private val initialPurchases = listOf(
-        Purchase(id = "P001", market = "Carrefour", date = "2026-05-01", total = 38650.0),
-        Purchase(id = "P002", market = "Disco", date = "2026-04-29", total = 23400.0),
-        Purchase(id = "P003", market = "Coto", date = "2026-04-27", total = 41200.0),
-        Purchase(id = "P004", market = "Dia", date = "2026-04-24", total = 15780.0)
+        Purchase(id = "P001", market = "Carrefour", date = "2026-05-01", time = "10:15", total = 38650.0),
+        Purchase(id = "P002", market = "Disco", date = "2026-04-29", time = "18:40", total = 23400.0),
+        Purchase(id = "P003", market = "Coto", date = "2026-04-27", time = "12:10", total = 41200.0),
+        Purchase(id = "P004", market = "Dia", date = "2026-04-24", time = "20:05", total = 15780.0)
     )
 
     private val initialProducts = mapOf(
@@ -68,6 +68,37 @@ object FakeWalletRepository {
             productsState.value = productsState.value + (purchase.id to products)
         }
         clearDraftProducts()
+    }
+
+    fun updatePurchase(updated: Purchase) {
+        purchasesState.value = purchasesState.value.map { purchase ->
+            if (purchase.id == updated.id) updated else purchase
+        }
+    }
+
+    fun deletePurchase(purchaseId: String) {
+        purchasesState.value = purchasesState.value.filterNot { it.id == purchaseId }
+        productsState.value = productsState.value - purchaseId
+    }
+
+    fun updateProduct(purchaseId: String, updated: Product) {
+        val current = productsState.value[purchaseId].orEmpty()
+        val updatedList = current.map { product ->
+            if (product.id == updated.id) updated else product
+        }
+        if (updatedList.isNotEmpty()) {
+            productsState.value = productsState.value + (purchaseId to updatedList)
+        }
+    }
+
+    fun deleteProduct(purchaseId: String, productId: String) {
+        val current = productsState.value[purchaseId].orEmpty()
+        val updatedList = current.filterNot { it.id == productId }
+        if (updatedList.isEmpty()) {
+            productsState.value = productsState.value - purchaseId
+        } else {
+            productsState.value = productsState.value + (purchaseId to updatedList)
+        }
     }
 
     fun getInitialChatMessages(): List<ChatMessage> {
