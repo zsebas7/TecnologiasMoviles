@@ -26,6 +26,7 @@ import com.undef.superahorro.caparrozruiz.ui.screens.purchase.NewPurchaseScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.profile.ProfileScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.settings.SettingsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.splash.SplashScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.stats.StatsScreen
 
 @Composable
 fun SuperAhorroNavHost() {
@@ -138,6 +139,9 @@ fun SuperAhorroNavHost() {
                         }
                     }
                 )
+            }
+            composable(AppRoute.Stats) {
+                StatsScreen()
             }
             composable(AppRoute.Chat) {
                 ChatScreen()

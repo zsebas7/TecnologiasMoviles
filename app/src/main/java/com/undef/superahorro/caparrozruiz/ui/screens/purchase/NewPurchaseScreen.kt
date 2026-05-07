@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,7 +27,6 @@ import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.components.AppTextField
 import com.undef.superahorro.caparrozruiz.ui.components.PrimaryButton
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.NewPurchaseViewModel
-import java.util.Locale
 
 @Composable
 fun NewPurchaseScreen(
@@ -61,10 +61,10 @@ fun NewPurchaseScreen(
                     label = stringResource(R.string.purchase_new_market_label)
                 )
                 AppTextField(
-                    value = String.format(Locale.US, "%.2f", uiState.computedTotal),
-                    onValueChange = {},
-                    label = stringResource(R.string.purchase_new_computed_total_label),
-                    readOnly = true
+                    value = uiState.total,
+                    onValueChange = viewModel::onTotalChanged,
+                    label = stringResource(R.string.purchase_new_total_label),
+                    keyboardType = KeyboardType.Number
                 )
             }
         }
