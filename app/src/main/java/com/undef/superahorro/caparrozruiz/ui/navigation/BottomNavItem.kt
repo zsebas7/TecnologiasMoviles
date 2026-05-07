@@ -20,7 +20,7 @@ val bottomNavItems = listOf(
     BottomNavItem(route = AppRoute.Home, icon = Icons.Default.Home, labelRes = R.string.nav_home),
     BottomNavItem(route = AppRoute.Stats, icon = Icons.Default.BarChart, labelRes = R.string.nav_stats),
     BottomNavItem(route = AppRoute.NewPurchase, icon = Icons.Default.AddShoppingCart, labelRes = R.string.nav_new_purchase),
-    BottomNavItem(route = AppRoute.More, icon = Icons.Default.MoreHoriz, labelRes = R.string.nav_more),
-    BottomNavItem(route = AppRoute.Chat, icon = Icons.AutoMirrored.Filled.Chat, labelRes = R.string.nav_chat)
+    BottomNavItem(route = AppRoute.Chat, icon = Icons.AutoMirrored.Filled.Chat, labelRes = R.string.nav_chat),
+    BottomNavItem(route = AppRoute.More, icon = Icons.Default.MoreHoriz, labelRes = R.string.nav_more)
 
 )
