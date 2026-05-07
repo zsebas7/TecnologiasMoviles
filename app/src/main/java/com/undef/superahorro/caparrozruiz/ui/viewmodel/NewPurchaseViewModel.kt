@@ -18,6 +18,7 @@ data class NewPurchaseUiState(
     val date: String = "",
     val time: String = "",
     val market: String = "",
+    val total: String = "",
     val computedTotal: Double = 0.0,
     val products: List<Product> = emptyList(),
     val isSaving: Boolean = false
@@ -70,6 +71,16 @@ class NewPurchaseViewModel : ViewModel() {
         _purchaseState.value = _purchaseState.value.copy(market = value)
     }
 
+    fun onTotalChanged(value: String) {
+        val filtered = value.filter { it.isDigit() || it == '.' }
+        val normalized = if (filtered.count { it == '.' } > 1) {
+            filtered.substringBefore('.') + "." + filtered.substringAfter('.', "")
+        } else {
+            filtered
+        }
+        _purchaseState.value = _purchaseState.value.copy(total = normalized)
+    }
+
     fun onProductNameChanged(value: String) {
         _productState.value = _productState.value.copy(name = value)
     }
@@ -105,11 +116,13 @@ class NewPurchaseViewModel : ViewModel() {
 
     fun savePurchase(onSaved: () -> Unit) {
         viewModelScope.launch {
-            if (_purchaseState.value.market.isBlank() || _purchaseState.value.products.isEmpty()) {
+            _purchaseState.value = _purchaseState.value.copy(isSaving = true)
+            val totalValue = _purchaseState.value.total.toDoubleOrNull()
+                ?: _purchaseState.value.computedTotal
+            if (_purchaseState.value.market.isBlank() || totalValue <= 0.0) {
+                _purchaseState.value = _purchaseState.value.copy(isSaving = false)
                 return@launch
             }
-            _purchaseState.value = _purchaseState.value.copy(isSaving = true)
-            val totalValue = _purchaseState.value.computedTotal
             val purchase = Purchase(
                 id = "P-${System.currentTimeMillis()}",
                 market = _purchaseState.value.market,

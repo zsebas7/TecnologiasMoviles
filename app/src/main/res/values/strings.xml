@@ -8,6 +8,7 @@
     <string name="nav_profile">Perfil</string>
     <string name="nav_settings">Ajustes</string>
     <string name="nav_chat">Chat</string>
+    <string name="nav_stats">Stats</string>
 
     <string name="splash_title">Super Ahorro</string>
     <string name="splash_subtitle">Tu control diario de compras</string>
@@ -60,7 +61,7 @@
     <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>
     <string name="purchase_new_time_label">Hora (hh:mm)</string>
     <string name="purchase_new_market_label">Comercio o plataforma</string>
-    <string name="purchase_new_computed_total_label">Total calculado por productos</string>
+    <string name="purchase_new_total_label">Total</string>
     <string name="purchase_new_products_title">Productos</string>
     <string name="purchase_new_add_product_button">Agregar producto</string>
     <string name="purchase_new_product_quantity">Cantidad: %1$d</string>
@@ -77,4 +78,15 @@
     <string name="chat_title">Asistente de consumos</string>
     <string name="chat_input_label">Escribe tu consulta</string>
     <string name="chat_send_button">Enviar</string>
+
+    <string name="stats_title">Estadisticas</string>
+    <string name="stats_subtitle">Graficos de gastos por periodo</string>
+    <string name="stats_mode_daily">Diario</string>
+    <string name="stats_mode_monthly">Mensual</string>
+    <string name="stats_chart_title">Gastos</string>
+    <string name="stats_chart_empty">Sin datos para mostrar</string>
+    <string name="stats_chart_value">$ %1$.0f</string>
+    <string name="stats_pie_title">Rubros</string>
+    <string name="stats_pie_empty">Sin rubros para mostrar</string>
+    <string name="stats_pie_item">%1$s: $ %2$.0f</string>
 </resources>

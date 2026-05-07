@@ -8,6 +8,7 @@
     <string name="nav_profile">Profile</string>
     <string name="nav_settings">Settings</string>
     <string name="nav_chat">Chat</string>
+    <string name="nav_stats">Stats</string>
 
     <string name="splash_title">Super Ahorro</string>
     <string name="splash_subtitle">Your daily shopping control</string>
@@ -45,9 +46,20 @@
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
     <string name="settings_logout_button">Log out</string>
 
-    <string name="purchase_new_computed_total_label">Products-based total</string>
+    <string name="purchase_new_total_label">Total</string>
 
     <string name="chat_title">Consumption assistant</string>
     <string name="chat_input_label">Write your question</string>
     <string name="chat_send_button">Send</string>
+
+    <string name="stats_title">Statistics</string>
+    <string name="stats_subtitle">Spending charts by period</string>
+    <string name="stats_mode_daily">Daily</string>
+    <string name="stats_mode_monthly">Monthly</string>
+    <string name="stats_chart_title">Spending</string>
+    <string name="stats_chart_empty">No data to display</string>
+    <string name="stats_chart_value">$ %1$.0f</string>
+    <string name="stats_pie_title">Categories</string>
+    <string name="stats_pie_empty">No categories to display</string>
+    <string name="stats_pie_item">%1$s: $ %2$.0f</string>
 </resources>
