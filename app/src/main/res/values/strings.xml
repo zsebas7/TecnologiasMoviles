@@ -68,6 +68,10 @@
     <string name="purchase_detail_edit_product_button">Editar producto</string>
     <string name="purchase_detail_delete_product_button">Eliminar producto</string>
     <string name="purchase_detail_edit_product_title">Editar producto</string>
+    <string name="purchase_detail_delete_product_title">Eliminar producto</string>
+    <string name="purchase_detail_delete_product_message">¿Confirmas eliminar este producto?</string>
+    <string name="purchase_detail_delete_title">Eliminar compra</string>
+    <string name="purchase_detail_delete_message">¿Confirmas eliminar esta compra?</string>
     <string name="purchase_detail_product_code">Código: %1$s</string>
 
     <string name="purchase_new_title">Nueva compra</string>
@@ -87,7 +91,6 @@
     <string name="purchase_new_ticket_status">Adjunto simulado: %1$s</string>
 
     <string name="product_new_title">Nuevo producto</string>
-    <string name="product_new_code_label">Código</string>
     <string name="product_new_name_label">Nombre</string>
     <string name="product_new_description_label">Descripción</string>
     <string name="product_new_quantity_label">Cantidad</string>
@@ -106,7 +109,7 @@
     <string name="stats_chart_empty">Sin datos para mostrar</string>
     <string name="stats_chart_value">$ %1$.0f</string>
     <string name="stats_pie_title">Supermercados</string>
-    <string name="stats_pie_empty">Sin rubros para mostrar</string>
+    <string name="stats_pie_empty">Sin datos para mostrar</string>
     <string name="stats_pie_item">%1$s: $ %2$.0f</string>
 
     <string name="more_title">Más opciones</string>
@@ -117,5 +120,6 @@
     <string name="more_open_action">Abrir</string>
 
     <string name="common_cancel">Cancelar</string>
+    <string name="common_confirm">Confirmar</string>
     <string name="common_save">Guardar</string>
 </resources>

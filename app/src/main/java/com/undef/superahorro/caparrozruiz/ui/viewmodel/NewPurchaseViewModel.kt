@@ -26,7 +26,6 @@ data class NewPurchaseUiState(
 )
 
 data class NewProductUiState(
-    val code: String = "",
     val name: String = "",
     val description: String = "",
     val quantity: String = "",
@@ -88,10 +87,6 @@ class NewPurchaseViewModel : ViewModel() {
         _productState.value = _productState.value.copy(name = value)
     }
 
-    fun onProductCodeChanged(value: String) {
-        _productState.value = _productState.value.copy(code = value)
-    }
-
     fun onProductDescriptionChanged(value: String) {
         _productState.value = _productState.value.copy(description = value)
     }
@@ -114,7 +109,7 @@ class NewPurchaseViewModel : ViewModel() {
         if (_productState.value.name.isBlank() || quantity <= 0 || price <= 0.0) return
         val product = Product(
             id = "DRAFT-${System.currentTimeMillis()}",
-            code = _productState.value.code,
+            code = "",
             name = _productState.value.name,
             description = _productState.value.description,
             quantity = quantity,
