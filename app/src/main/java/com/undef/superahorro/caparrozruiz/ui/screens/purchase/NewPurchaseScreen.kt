@@ -66,10 +66,9 @@ fun NewPurchaseScreen(
                 )
                 AppTextField(
                     value = uiState.total,
-                    onValueChange = {},
+                    onValueChange = viewModel::onTotalChanged,
                     label = stringResource(R.string.purchase_new_total_label),
-                    keyboardType = KeyboardType.Number,
-                    readOnly = true
+                    keyboardType = KeyboardType.Number
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(text = stringResource(R.string.purchase_new_ticket_title), style = MaterialTheme.typography.titleSmall)

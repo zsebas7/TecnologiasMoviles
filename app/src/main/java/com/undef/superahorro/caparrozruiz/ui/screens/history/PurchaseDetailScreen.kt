@@ -10,10 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -36,6 +41,8 @@ fun PurchaseDetailScreen(
     val products = uiState.productsByPurchaseId[purchaseId].orEmpty()
     val editingPurchase = uiState.editingPurchase
     val editingProduct = uiState.editingProduct
+    var deletePurchaseId by remember { mutableStateOf<String?>(null) }
+    var deleteProductId by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -60,12 +67,34 @@ fun PurchaseDetailScreen(
                         OutlinedButton(onClick = { viewModel.startEditPurchase(purchase.id) }) {
                             Text(text = stringResource(R.string.purchase_detail_edit_button))
                         }
-                        OutlinedButton(onClick = { viewModel.deletePurchase(purchase.id) }) {
+                        OutlinedButton(onClick = { deletePurchaseId = purchase.id }) {
                             Text(text = stringResource(R.string.purchase_detail_delete_button))
                         }
                     }
                 }
             }
+        }
+        if (deletePurchaseId != null) {
+            AlertDialog(
+                onDismissRequest = { deletePurchaseId = null },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            deletePurchaseId?.let(viewModel::deletePurchase)
+                            deletePurchaseId = null
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.common_confirm))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { deletePurchaseId = null }) {
+                        Text(text = stringResource(R.string.common_cancel))
+                    }
+                },
+                title = { Text(text = stringResource(R.string.purchase_detail_delete_title)) },
+                text = { Text(text = stringResource(R.string.purchase_detail_delete_message)) }
+            )
         }
         if (editingPurchase != null && editingPurchase.id == purchaseId) {
             EditPurchaseCard(
@@ -101,7 +130,7 @@ fun PurchaseDetailScreen(
                         OutlinedButton(onClick = { viewModel.startEditProduct(purchaseId, product.id) }) {
                             Text(text = stringResource(R.string.purchase_detail_edit_product_button))
                         }
-                        OutlinedButton(onClick = { viewModel.deleteProduct(purchaseId, product.id) }) {
+                        OutlinedButton(onClick = { deleteProductId = product.id }) {
                             Text(text = stringResource(R.string.purchase_detail_delete_product_button))
                         }
                     }
@@ -109,17 +138,16 @@ fun PurchaseDetailScreen(
             }
             if (editingProduct != null && editingProduct.id == product.id) {
                 EditProductCard(
-                    code = editingProduct.code,
                     name = editingProduct.name,
                     description = editingProduct.description,
                     quantity = editingProduct.quantity,
                     price = editingProduct.price,
                     onDismiss = viewModel::clearEdits,
-                    onSave = { code, name, description, quantity, price ->
+                    onSave = { name, description, quantity, price ->
                         viewModel.updateProduct(
                             purchaseId = purchaseId,
                             productId = editingProduct.id,
-                            code = code,
+                            code = editingProduct.code,
                             name = name,
                             description = description,
                             quantity = quantity,
@@ -130,5 +158,28 @@ fun PurchaseDetailScreen(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
+    }
+
+    if (deleteProductId != null) {
+        AlertDialog(
+            onDismissRequest = { deleteProductId = null },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deleteProductId?.let { viewModel.deleteProduct(purchaseId, it) }
+                        deleteProductId = null
+                    }
+                ) {
+                    Text(text = stringResource(R.string.common_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteProductId = null }) {
+                    Text(text = stringResource(R.string.common_cancel))
+                }
+            },
+            title = { Text(text = stringResource(R.string.purchase_detail_delete_product_title)) },
+            text = { Text(text = stringResource(R.string.purchase_detail_delete_product_message)) }
+        )
     }
 }

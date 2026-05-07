@@ -57,7 +57,7 @@ fun HistoryScreen(
                             deleteTargetId = null
                         }
                     ) {
-                        Text(text = stringResource(R.string.common_save))
+                        Text(text = stringResource(R.string.common_confirm))
                     }
                 },
                 dismissButton = {
