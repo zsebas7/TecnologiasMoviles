@@ -43,13 +43,13 @@ fun SuperAhorroNavHost() {
                         NavigationBarItem(
                             selected = currentRoute == item.route,
                             onClick = {
-                                //Navega al destino asegurando que no se dupliquen pantallas en la pila
+                                //Navega sin acumular pantallas en el back stack
                                 navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                    popUpTo(AppRoute.Home) {
+                                        inclusive = false
                                     }
                                     launchSingleTop = true
-                                    restoreState = true
+                                    restoreState = false
                                 }
                             },
                             icon = { Icon(imageVector = item.icon, contentDescription = null) },
