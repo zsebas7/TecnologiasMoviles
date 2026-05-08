@@ -103,8 +103,7 @@ fun SuperAhorroNavHost() {
             }
             composable(AppRoute.Home) {
                 HomeScreen(
-                    onOpenHistory = { navController.navigate(AppRoute.History) },
-                    onOpenNewPurchase = { navController.navigate(AppRoute.NewPurchase) }
+                    onOpenHistory = { navController.navigate(AppRoute.History) }
                 )
             }
             composable(AppRoute.History) {
