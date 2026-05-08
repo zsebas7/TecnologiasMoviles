@@ -1,25 +1,75 @@
 # Super Ahorro
 
-Aplicación Android para registrar y visualizar gastos de supermercado.
+Aplicación Android (Jetpack Compose) para registrar, consultar y analizar compras de supermercado con datos mock y navegación completa entre módulos.
 
-## Primera entrega (UI)
+## Objetivo académico
 
-- Flujo de identidad: Splash, Login, Registro y Olvidé mi contraseña.
-- Módulo principal: Home con últimas compras, Historial, Nueva compra, Estadísticas y Chat opcional.
-- Pantalla Más: acceso a Perfil y Settings.
-- Gestión visual de compras: editar/eliminar compras y productos, adjuntar ticket (simulado).
-- Tecnologías: Jetpack Compose, Navigation Compose, MVVM con mock data, Intents y corrutinas.
+Este proyecto integra los temas principales de la materia:
+
+- Activities y ciclo de vida.
+- Intents explícitos e implícitos.
+- UI declarativa con Jetpack Compose.
+- Arquitectura MVVM.
+- Corrutinas con `viewModelScope`.
+- Internacionalización (`strings.xml`).
+- Versionado con GitFlow.
+
+## Stack técnico
+
+- Kotlin + Android SDK
+- Jetpack Compose + Material 3
+- Navigation Compose
+- ViewModel + StateFlow
+- Corrutinas de Kotlin
+
+## Dónde se usa cada concepto teórico
+
+- **Activity principal**: entrada de la app en `app/src/main/java/com/undef/superahorro/caparrozruiz/MainActivity.kt`.
+- **Compose app shell**: raíz visual y tema en `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/SuperAhorroApp.kt`.
+- **Navegación (`NavHost`, rutas, bottom bar)**:
+  - `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt`
+  - `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/AppRoute.kt`
+  - `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/BottomNavItem.kt`
+- **MVVM (estado + lógica de pantalla)**: `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/`.
+- **Modelos de dominio**: `app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/`.
+- **Mock data / repositorio fake**: `app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/FakeWalletRepository.kt`.
+- **Corrutinas**:
+  - Auth simulado (`delay`, loading): `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/AuthViewModel.kt`
+  - Flujos de compras/productos: `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/NewPurchaseViewModel.kt`, `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/HistoryViewModel.kt`
+- **Intents**:
+  - Envío de consulta por email: `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/settings/SettingsScreen.kt`
+  - Selección/captura de imagen de ticket (simulada): `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/purchase/NewPurchaseScreen.kt`
+- **Internacionalización**:
+  - Español: `app/src/main/res/values/strings.xml`
+  - Inglés: `app/src/main/res/values-en/strings.xml`
+
+## Módulos y pantallas
+
+- **Identidad**: Splash, Login, Registro, Recuperación.
+- **Principal**: Home (resumen y últimas compras), Historial, Detalle, Nueva compra, Nuevo producto.
+- **Soporte/usuario**: Chat, Perfil, Settings, Más.
+- **Análisis**: Estadísticas (indicadores y placeholders visuales).
+
+Las pantallas están en `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/`.
+
+## Estructura del proyecto
+
+- `app/src/main/java/com/undef/superahorro/caparrozruiz/data`: modelos y repositorio mock.
+- `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/components`: componentes reutilizables.
+- `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation`: grafo y rutas.
+- `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens`: pantallas Compose.
+- `app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel`: ViewModels por caso de uso.
+- `app/src/main/res/values*`: recursos de texto y configuración visual.
 
 ## Configuración base
 
-- Package: `com.undef.superahorro.caparrozruiz`.
-- Flujo GitFlow: `main`, `develop`, ramas `feature/*`.
+- Package / namespace: `com.undef.superahorro.caparrozruiz`
+- Flujo de ramas: `main`, `develop`, `feature/*`, `release/*`, `hotfix/*`
 
-## Estructura implementada
+## Ejecución
 
-- Navegación principal con `NavHost`: Splash, Login, Registro, Recuperación, Home, Historial, Detalle, Nueva compra, Nuevo producto, Estadísticas, Chat y Más.
-- Patrón MVVM con ViewModels por pantalla y repositorio mock compartido.
-- Internacionalización lista en `values/strings.xml` y `values-en/strings.xml`.
-- Settings incluye acción de cerrar sesión y consulta por email vía Intent.
-- Nueva compra incluye simulación de adjunto de ticket (galería/cámara).
-- UI refinada con estilo wallet: cards, acentos azules y layouts coherentes entre auth y pantallas principales.
+1. Abrir el proyecto en Android Studio.
+2. Sincronizar Gradle.
+3. Ejecutar el módulo `app` en emulador o dispositivo físico.
+
+Si Android Studio muestra una configuración vieja de ejecución, recrear la Run Configuration de tipo `Android App` para el módulo `app` y lanzar la `Default Activity`.

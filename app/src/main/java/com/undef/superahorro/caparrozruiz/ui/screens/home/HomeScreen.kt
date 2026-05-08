@@ -37,28 +37,28 @@ import com.undef.superahorro.caparrozruiz.ui.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
-    onOpenChat: () -> Unit,
     onOpenHistory: () -> Unit,
-    onOpenNewPurchase: () -> Unit,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel() //ViewModel que trae datos
 ) {
+    //Observa el estado del viewModel y actualiza la UI
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    //Para que use la configuración del celular (idioma, tema)
     val locale = LocalConfiguration.current.locales[0]
 
-    LazyColumn(
+    LazyColumn( //Para que solo renderice los elementos en pantalla
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text(
+            Text( //Texto con uso de strings.xml
                 text = stringResource(R.string.home_welcome, uiState.userName),
                 style = MaterialTheme.typography.headlineMedium
             )
         }
         item {
-            Card(
+            Card( //Contenedor visual que utiliza colores de Material Design
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
@@ -109,6 +109,7 @@ fun HomeScreen(
                 Text(text = stringResource(R.string.home_latest_purchases_title), style = MaterialTheme.typography.titleLarge)
             }
         }
+        //Itera sobre la lista de datos para generar componentes de forma dinamica
         items(uiState.purchases, key = { it.id }) { purchase ->
             PurchaseItem(
                 purchase = purchase,
@@ -116,6 +117,7 @@ fun HomeScreen(
             )
         }
         item {
+            //Accion de navegacion delegada a NavHost
             Button(onClick = onOpenHistory, modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(R.string.home_open_history_button))
             }
