@@ -10,12 +10,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AplicacionesMoviles">
+        android:theme="@style/Theme.TecnologiasMoviles">
         <activity
             android:name="com.undef.superahorro.caparrozruiz.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AplicacionesMoviles">
+            android:theme="@style/Theme.TecnologiasMoviles">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

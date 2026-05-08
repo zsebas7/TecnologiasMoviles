@@ -72,10 +72,13 @@ fun NewPurchaseScreen(
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(text = stringResource(R.string.purchase_new_ticket_title), style = MaterialTheme.typography.titleSmall)
+                    //Fila de botones para hacer las acciones relacionadas a los tickets
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
                             onClick = {
+                                //Crea un intent para abrir la galeria
                                 val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
+                                //Lanza la actividad externa utilizando el contexto de la aplicación
                                 context.startActivity(intent)
                                 viewModel.setTicketStatus("Galería")
                             }
@@ -84,7 +87,9 @@ fun NewPurchaseScreen(
                         }
                         OutlinedButton(
                             onClick = {
+                                //Crea un intent para abrir la camara
                                 val intent = Intent("android.media.action.IMAGE_CAPTURE")
+                                //Delega la tarea a la actividad externa
                                 context.startActivity(intent)
                                 viewModel.setTicketStatus("Cámara")
                             }

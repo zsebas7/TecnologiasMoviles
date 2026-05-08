@@ -37,19 +37,21 @@ object FakeWalletRepository {
             Product("5", "779555", "Queso", "Cremoso 300g", 1, 3600.0)
         )
     )
-
+    //Permite modificar las listas de compras y productos de forma privada
     private val purchasesState = MutableStateFlow(initialPurchases)
     private val productsState = MutableStateFlow(initialProducts)
+    //Maneja los productos temporales antes de confirmar una compra
     private val draftProductsState = MutableStateFlow<List<Product>>(emptyList())
 
     fun getCurrentUser(): User = user
-
+    //Expone los datos como flujos de solo lectura
     fun purchasesFlow(): StateFlow<List<Purchase>> = purchasesState.asStateFlow()
 
     fun productsByPurchaseIdFlow(): StateFlow<Map<String, List<Product>>> = productsState.asStateFlow()
 
     fun draftProductsFlow(): StateFlow<List<Product>> = draftProductsState.asStateFlow()
 
+    //Logica de negocio
     fun addDraftProduct(product: Product) {
         draftProductsState.value = draftProductsState.value + product
     }
@@ -63,11 +65,12 @@ object FakeWalletRepository {
     }
 
     fun addPurchase(purchase: Purchase, products: List<Product>) {
+        //Guarda la compra al inicio de la lista y vincula sus productos
         purchasesState.value = listOf(purchase) + purchasesState.value
         if (products.isNotEmpty()) {
             productsState.value = productsState.value + (purchase.id to products)
         }
-        clearDraftProducts()
+        clearDraftProducts()//Limpiar el borrador
     }
 
     fun updatePurchase(updated: Purchase) {

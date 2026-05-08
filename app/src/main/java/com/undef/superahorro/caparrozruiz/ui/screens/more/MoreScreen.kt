@@ -29,9 +29,9 @@ fun MoreScreen(
     ) {
         Text(text = stringResource(R.string.more_title), style = MaterialTheme.typography.headlineMedium)
         MoreItem(
+            onClick = onOpenProfile,
             title = stringResource(R.string.more_profile_title),
-            subtitle = stringResource(R.string.more_profile_subtitle),
-            onClick = onOpenProfile
+            subtitle = stringResource(R.string.more_profile_subtitle)
         )
         MoreItem(
             title = stringResource(R.string.more_settings_title),

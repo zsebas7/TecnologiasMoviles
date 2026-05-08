@@ -6,7 +6,7 @@ import com.undef.superahorro.caparrozruiz.ui.theme.SuperAhorroTheme
 
 @Composable
 fun SuperAhorroApp() {
-    SuperAhorroTheme(dynamicColor = false) {
-        SuperAhorroNavHost()
+    SuperAhorroTheme(dynamicColor = false) { // Para que la app use el tema de la UI
+        SuperAhorroNavHost() //NavHost es el encargado de decir que pantalla se muestra
     }
 }

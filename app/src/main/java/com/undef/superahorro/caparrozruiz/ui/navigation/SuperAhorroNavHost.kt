@@ -31,9 +31,9 @@ import com.undef.superahorro.caparrozruiz.ui.screens.more.MoreScreen
 
 @Composable
 fun SuperAhorroNavHost() {
-    val navController = rememberNavController()
+    val navController = rememberNavController() //Gestiona el historial y los cambios de pantallas
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-    val showBottomBar = currentRoute in mainRoutes
+    val showBottomBar = currentRoute in mainRoutes //Determina si mostrar la BottomBar o no
 
     Scaffold(
         bottomBar = {
@@ -43,6 +43,7 @@ fun SuperAhorroNavHost() {
                         NavigationBarItem(
                             selected = currentRoute == item.route,
                             onClick = {
+                                //Navega al destino asegurando que no se dupliquen pantallas en la pila
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
@@ -59,6 +60,7 @@ fun SuperAhorroNavHost() {
             }
         }
     ) { innerPadding ->
+        //Contenedor que vincula las rutas con sus respectivos Composables
         NavHost(
             navController = navController,
             startDestination = AppRoute.Splash,
@@ -67,6 +69,7 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.Splash) {
                 SplashScreen(
                     onSplashFinished = {
+                        //Redirige a LoginScreen y elimina el SplashScreen de la pila
                         navController.navigate(AppRoute.Login) {
                             popUpTo(AppRoute.Splash) { inclusive = true }
                         }
@@ -76,6 +79,7 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.Login) {
                 LoginScreen(
                     onLoginSuccess = {
+                        //En el caso de ir a Home, se borra el LoginScreen de la pila
                         navController.navigate(AppRoute.Home) {
                             popUpTo(AppRoute.Login) { inclusive = true }
                         }
@@ -99,7 +103,6 @@ fun SuperAhorroNavHost() {
             }
             composable(AppRoute.Home) {
                 HomeScreen(
-                    onOpenChat = { navController.navigate(AppRoute.Chat) },
                     onOpenHistory = { navController.navigate(AppRoute.History) },
                     onOpenNewPurchase = { navController.navigate(AppRoute.NewPurchase) }
                 )
@@ -134,6 +137,7 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.Settings) {
                 SettingsScreen(
                     onLogoutClick = {
+                        //Reinicia el flujo de navegacion hacia el Login tras cerrar sesion
                         navController.navigate(AppRoute.Login) {
                             popUpTo(AppRoute.Home) { inclusive = true }
                             launchSingleTop = true
