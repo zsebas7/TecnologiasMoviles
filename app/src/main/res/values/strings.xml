@@ -73,6 +73,8 @@
     <string name="purchase_detail_delete_title">Eliminar compra</string>
     <string name="purchase_detail_delete_message">¿Confirmas eliminar esta compra?</string>
     <string name="purchase_detail_product_code">Código: %1$s</string>
+    <string name="purchase_detail_share_button">Compartir compra</string>
+    <string name="purchase_detail_share_chooser">Compartir compra con</string>
 
     <string name="purchase_new_title">Nueva compra</string>
     <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>

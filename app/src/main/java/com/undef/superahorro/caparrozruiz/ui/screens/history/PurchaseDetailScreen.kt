@@ -1,5 +1,6 @@
 package com.undef.superahorro.caparrozruiz.ui.screens.history
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,7 +38,11 @@ fun PurchaseDetailScreen(
     viewModel: HistoryViewModel = viewModel()
 ) {
     val id = purchaseId.toLongOrNull() ?: -1L
+    val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
+    val currencySymbol = stringResource(R.string.common_currency_symbol)
+    val productsTitle = stringResource(R.string.purchase_detail_products_title)
+    val shareChooserTitle = stringResource(R.string.purchase_detail_share_chooser)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val purchase = uiState.purchases.firstOrNull { it.id == id }
     val products = uiState.productsByPurchaseId[id].orEmpty()
@@ -71,6 +77,29 @@ fun PurchaseDetailScreen(
                         OutlinedButton(onClick = { deletePurchaseId = purchase.id }) {
                             Text(text = stringResource(R.string.purchase_detail_delete_button))
                         }
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            val shareText = buildString {
+                                appendLine("${purchase.market} - ${purchase.date} ${purchase.time}")
+                                appendLine("Total: $currencySymbol ${"%.2f".format(locale, purchase.total)}")
+                                if (products.isNotEmpty()) {
+                                    appendLine()
+                                    appendLine(productsTitle)
+                                    products.forEach { product ->
+                                        appendLine("- ${product.name} x${product.quantity}")
+                                    }
+                                }
+                            }
+                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            val chooser = Intent.createChooser(sendIntent, shareChooserTitle)
+                            context.startActivity(chooser)
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.purchase_detail_share_button))
                     }
                 }
             }

@@ -73,6 +73,8 @@
     <string name="purchase_detail_delete_title">Delete purchase</string>
     <string name="purchase_detail_delete_message">Confirm delete this purchase?</string>
     <string name="purchase_detail_product_code">Code: %1$s</string>
+    <string name="purchase_detail_share_button">Share purchase</string>
+    <string name="purchase_detail_share_chooser">Share purchase with</string>
 
     <string name="purchase_new_title">New purchase</string>
     <string name="purchase_new_date_label">Date (yyyy-mm-dd)</string>
