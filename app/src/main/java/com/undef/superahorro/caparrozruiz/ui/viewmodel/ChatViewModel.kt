@@ -2,7 +2,7 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.undef.superahorro.caparrozruiz.data.model.ChatMessage
-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,10 @@ data class ChatUiState(
 class ChatViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        ChatUiState(messages = FakeWalletRepository.getInitialChatMessages())
+        ChatUiState(messages = listOf(
+            ChatMessage(id = "m1", message = "Hola, soy tu asistente de consumos.", isFromUser = false),
+            ChatMessage(id = "m2", message = "Podés preguntar por precios o historial.", isFromUser = false)
+        ))
     )
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 

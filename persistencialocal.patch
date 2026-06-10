@@ -1,0 +1,787 @@
+From 5540b4be25b73b8ac969febaabbf6af788760f05 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 10 Jun 2026 17:46:17 +0000
+Subject: [PATCH] feat: implementar persistencia local con Room y DataStore
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Entidades Room: PurchaseEntity, ProductEntity (relación 1:N con FK cascade)
+- DAOs con Flow + suspend: PurchaseDao, ProductDao
+- AppDatabase singleton con fallbackToDestructiveMigration
+- WalletRepository (interfaz) + RoomWalletRepository (implementación real)
+- DataStore Preferences para sesión (isLoggedIn), perfil de usuario y settings
+- AppContainer como contenedor de dependencias inicializado en Application
+- SuperAhorroApplication registrado en AndroidManifest
+- UI states separados en ui/state/: Home, History, Auth, Profile, Settings, NewPurchase, Stats
+- SplashScreen resuelve destino (Login/Home) según sesión persistida
+- ensureSeedData() para poblar BD con datos de prueba en primer arranque
+- Eliminado FakeWalletRepository, desacoplado ChatViewModel
+- Corregido error de sintaxis en StatsViewModel
+
+https://claude.ai/code/session_018RDUKX2HHyCRrCA9kbA4ST
+---
+ app/src/main/AndroidManifest.xml              |   1 +
+ .../caparrozruiz/SuperAhorroApplication.kt    |  11 ++
+ .../caparrozruiz/core/AppContainer.kt         |  25 ++++
+ .../caparrozruiz/data/local/AppDatabase.kt    |  28 ++++
+ .../caparrozruiz/data/local/dao/ProductDao.kt |  27 ++++
+ .../data/local/dao/PurchaseDao.kt             |  30 ++++
+ .../data/local/entity/ProductEntity.kt        |  31 ++++
+ .../data/local/entity/PurchaseEntity.kt       |  20 +++
+ .../data/repository/FakeWalletRepository.kt   | 113 ---------------
+ .../data/repository/RoomWalletRepository.kt   | 137 ++++++++++++++++++
+ .../data/repository/WalletRepository.kt       |  29 ++++
+ .../ui/navigation/SuperAhorroNavHost.kt       |  10 +-
+ .../caparrozruiz/ui/state/AuthUiState.kt      |  10 ++
+ .../caparrozruiz/ui/state/HistoryUiState.kt   |  11 ++
+ .../caparrozruiz/ui/state/HomeUiState.kt      |   9 ++
+ .../ui/state/NewPurchaseUiState.kt            |  22 +++
+ .../caparrozruiz/ui/state/ProfileUiState.kt   |   8 +
+ .../caparrozruiz/ui/state/SettingsUiState.kt  |   6 +
+ .../caparrozruiz/ui/state/StatsUiState.kt     |  15 ++
+ .../ui/viewmodel/ChatViewModel.kt             |   7 +-
+ .../ui/viewmodel/StatsViewModel.kt            |   2 +-
+ 21 files changed, 434 insertions(+), 118 deletions(-)
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/SuperAhorroApplication.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/core/AppContainer.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/AppDatabase.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/ProductDao.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/PurchaseDao.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/ProductEntity.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/PurchaseEntity.kt
+ delete mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/FakeWalletRepository.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/RoomWalletRepository.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/WalletRepository.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/AuthUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HistoryUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HomeUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/NewPurchaseUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/ProfileUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/SettingsUiState.kt
+ create mode 100644 app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/StatsUiState.kt
+
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 6f8078c..9c904e3 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -3,6 +3,7 @@
+     xmlns:tools="http://schemas.android.com/tools">
+ 
+     <application
++        android:name="com.undef.superahorro.caparrozruiz.SuperAhorroApplication"
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+         android:fullBackupContent="@xml/backup_rules"
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/SuperAhorroApplication.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/SuperAhorroApplication.kt
+new file mode 100644
+index 0000000..50b1044
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/SuperAhorroApplication.kt
+@@ -0,0 +1,11 @@
++package com.undef.superahorro.caparrozruiz
++
++import android.app.Application
++import com.undef.superahorro.caparrozruiz.core.AppContainer
++
++class SuperAhorroApplication : Application() {
++    override fun onCreate() {
++        super.onCreate()
++        AppContainer.init(this)
++    }
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/core/AppContainer.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/core/AppContainer.kt
+new file mode 100644
+index 0000000..4c0ce8a
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/core/AppContainer.kt
+@@ -0,0 +1,25 @@
++package com.undef.superahorro.caparrozruiz.core
++
++import android.content.Context
++import androidx.datastore.core.DataStore
++import androidx.datastore.preferences.core.Preferences
++import androidx.datastore.preferences.preferencesDataStore
++import com.undef.superahorro.caparrozruiz.data.local.AppDatabase
++import com.undef.superahorro.caparrozruiz.data.repository.RoomWalletRepository
++import com.undef.superahorro.caparrozruiz.data.repository.WalletRepository
++
++private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "superahorro_prefs")
++
++object AppContainer {
++    private lateinit var _walletRepository: WalletRepository
++    val walletRepository: WalletRepository get() = _walletRepository
++
++    fun init(context: Context) {
++        val db = AppDatabase.getInstance(context)
++        _walletRepository = RoomWalletRepository(
++            purchaseDao = db.purchaseDao(),
++            productDao = db.productDao(),
++            dataStore = context.dataStore
++        )
++    }
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/AppDatabase.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/AppDatabase.kt
+new file mode 100644
+index 0000000..622749a
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/AppDatabase.kt
+@@ -0,0 +1,28 @@
++package com.undef.superahorro.caparrozruiz.data.local
++
++import android.content.Context
++import androidx.room.Database
++import androidx.room.Room
++import androidx.room.RoomDatabase
++import com.undef.superahorro.caparrozruiz.data.local.dao.ProductDao
++import com.undef.superahorro.caparrozruiz.data.local.dao.PurchaseDao
++import com.undef.superahorro.caparrozruiz.data.local.entity.ProductEntity
++import com.undef.superahorro.caparrozruiz.data.local.entity.PurchaseEntity
++
++@Database(entities = [PurchaseEntity::class, ProductEntity::class], version = 1, exportSchema = false)
++abstract class AppDatabase : RoomDatabase() {
++    abstract fun purchaseDao(): PurchaseDao
++    abstract fun productDao(): ProductDao
++
++    companion object {
++        @Volatile private var INSTANCE: AppDatabase? = null
++
++        fun getInstance(context: Context): AppDatabase =
++            INSTANCE ?: synchronized(this) {
++                Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "superahorro.db")
++                    .fallbackToDestructiveMigration()
++                    .build()
++                    .also { INSTANCE = it }
++            }
++    }
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/ProductDao.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/ProductDao.kt
+new file mode 100644
+index 0000000..91418fa
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/ProductDao.kt
+@@ -0,0 +1,27 @@
++package com.undef.superahorro.caparrozruiz.data.local.dao
++
++import androidx.room.Dao
++import androidx.room.Insert
++import androidx.room.OnConflictStrategy
++import androidx.room.Query
++import androidx.room.Update
++import com.undef.superahorro.caparrozruiz.data.local.entity.ProductEntity
++import kotlinx.coroutines.flow.Flow
++
++@Dao
++interface ProductDao {
++    @Query("SELECT * FROM products ORDER BY id ASC")
++    fun observeAll(): Flow<List<ProductEntity>>
++
++    @Insert(onConflict = OnConflictStrategy.REPLACE)
++    suspend fun insert(product: ProductEntity): Long
++
++    @Insert(onConflict = OnConflictStrategy.REPLACE)
++    suspend fun insertAll(products: List<ProductEntity>)
++
++    @Update
++    suspend fun update(product: ProductEntity)
++
++    @Query("DELETE FROM products WHERE id = :id")
++    suspend fun deleteById(id: Long)
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/PurchaseDao.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/PurchaseDao.kt
+new file mode 100644
+index 0000000..50feca1
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/dao/PurchaseDao.kt
+@@ -0,0 +1,30 @@
++package com.undef.superahorro.caparrozruiz.data.local.dao
++
++import androidx.room.Dao
++import androidx.room.Insert
++import androidx.room.OnConflictStrategy
++import androidx.room.Query
++import androidx.room.Update
++import com.undef.superahorro.caparrozruiz.data.local.entity.PurchaseEntity
++import kotlinx.coroutines.flow.Flow
++
++@Dao
++interface PurchaseDao {
++    @Query("SELECT * FROM purchases ORDER BY createdAt DESC")
++    fun observeAll(): Flow<List<PurchaseEntity>>
++
++    @Query("SELECT COUNT(*) FROM purchases")
++    suspend fun count(): Int
++
++    @Insert(onConflict = OnConflictStrategy.REPLACE)
++    suspend fun insert(purchase: PurchaseEntity): Long
++
++    @Insert(onConflict = OnConflictStrategy.REPLACE)
++    suspend fun insertAll(purchases: List<PurchaseEntity>): List<Long>
++
++    @Update
++    suspend fun update(purchase: PurchaseEntity)
++
++    @Query("DELETE FROM purchases WHERE id = :id")
++    suspend fun deleteById(id: Long)
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/ProductEntity.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/ProductEntity.kt
+new file mode 100644
+index 0000000..a45be2f
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/ProductEntity.kt
+@@ -0,0 +1,31 @@
++package com.undef.superahorro.caparrozruiz.data.local.entity
++
++import androidx.room.Entity
++import androidx.room.ForeignKey
++import androidx.room.Index
++import androidx.room.PrimaryKey
++import com.undef.superahorro.caparrozruiz.data.model.Product
++
++@Entity(
++    tableName = "products",
++    foreignKeys = [ForeignKey(
++        entity = PurchaseEntity::class,
++        parentColumns = ["id"],
++        childColumns = ["purchaseId"],
++        onDelete = ForeignKey.CASCADE
++    )],
++    indices = [Index("purchaseId")]
++)
++data class ProductEntity(
++    @PrimaryKey(autoGenerate = true) val id: Long = 0,
++    val purchaseId: Long,
++    val code: String,
++    val name: String,
++    val description: String,
++    val quantity: Int,
++    val price: Double
++) {
++    fun toDomain() = Product(id = id, code = code, name = name, description = description, quantity = quantity, price = price)
++}
++
++fun Product.toEntity(purchaseId: Long) = ProductEntity(id = id, purchaseId = purchaseId, code = code, name = name, description = description, quantity = quantity, price = price)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/PurchaseEntity.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/PurchaseEntity.kt
+new file mode 100644
+index 0000000..4c76158
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/local/entity/PurchaseEntity.kt
+@@ -0,0 +1,20 @@
++package com.undef.superahorro.caparrozruiz.data.local.entity
++
++import androidx.room.Entity
++import androidx.room.PrimaryKey
++import com.undef.superahorro.caparrozruiz.data.model.Purchase
++
++@Entity(tableName = "purchases")
++data class PurchaseEntity(
++    @PrimaryKey(autoGenerate = true) val id: Long = 0,
++    val market: String,
++    val date: String,
++    val time: String,
++    val total: Double,
++    val ticketUri: String = "",
++    val createdAt: Long = System.currentTimeMillis()
++) {
++    fun toDomain() = Purchase(id = id, market = market, date = date, time = time, total = total, ticketUri = ticketUri)
++}
++
++fun Purchase.toEntity() = PurchaseEntity(id = id, market = market, date = date, time = time, total = total, ticketUri = ticketUri)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/FakeWalletRepository.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/FakeWalletRepository.kt
+deleted file mode 100644
+index 3f8f5ae..0000000
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/FakeWalletRepository.kt
++++ /dev/null
+@@ -1,113 +0,0 @@
+-package com.undef.superahorro.caparrozruiz.data.repository
+-
+-import com.undef.superahorro.caparrozruiz.data.model.ChatMessage
+-import com.undef.superahorro.caparrozruiz.data.model.Product
+-import com.undef.superahorro.caparrozruiz.data.model.Purchase
+-import com.undef.superahorro.caparrozruiz.data.model.User
+-import kotlinx.coroutines.flow.MutableStateFlow
+-import kotlinx.coroutines.flow.StateFlow
+-import kotlinx.coroutines.flow.asStateFlow
+-
+-object FakeWalletRepository {
+-
+-    private val user = User(
+-        name = "Martin Perez",
+-        email = "martin.perez@email.com",
+-        city = "Cordoba",
+-        monthlyBudget = 265000.0
+-    )
+-
+-    private val initialPurchases = listOf(
+-        Purchase(id = "P001", market = "Carrefour", date = "2026-05-01", time = "10:15", total = 38650.0),
+-        Purchase(id = "P002", market = "Disco", date = "2026-04-29", time = "18:40", total = 23400.0),
+-        Purchase(id = "P003", market = "Coto", date = "2026-04-27", time = "12:10", total = 41200.0),
+-        Purchase(id = "P004", market = "Dia", date = "2026-04-24", time = "20:05", total = 15780.0)
+-    )
+-
+-    private val initialProducts = mapOf(
+-        "P001" to listOf(
+-            Product("1", "779123", "Arroz largo", "Bolsa 1kg", 2, 1800.0),
+-            Product("2", "779456", "Aceite", "Girasol 900ml", 1, 3200.0)
+-        ),
+-        "P002" to listOf(
+-            Product("3", "779111", "Leche", "Entera 1L", 4, 1100.0)
+-        ),
+-        "P003" to listOf(
+-            Product("4", "779333", "Fideos", "Spaghetti 500g", 2, 1250.0),
+-            Product("5", "779555", "Queso", "Cremoso 300g", 1, 3600.0)
+-        )
+-    )
+-    //Permite modificar las listas de compras y productos de forma privada
+-    private val purchasesState = MutableStateFlow(initialPurchases)
+-    private val productsState = MutableStateFlow(initialProducts)
+-    //Maneja los productos temporales antes de confirmar una compra
+-    private val draftProductsState = MutableStateFlow<List<Product>>(emptyList())
+-
+-    fun getCurrentUser(): User = user
+-    //Expone los datos como flujos de solo lectura
+-    fun purchasesFlow(): StateFlow<List<Purchase>> = purchasesState.asStateFlow()
+-
+-    fun productsByPurchaseIdFlow(): StateFlow<Map<String, List<Product>>> = productsState.asStateFlow()
+-
+-    fun draftProductsFlow(): StateFlow<List<Product>> = draftProductsState.asStateFlow()
+-
+-    //Logica de negocio
+-    fun addDraftProduct(product: Product) {
+-        draftProductsState.value = draftProductsState.value + product
+-    }
+-
+-    fun removeDraftProduct(productId: String) {
+-        draftProductsState.value = draftProductsState.value.filterNot { it.id == productId }
+-    }
+-
+-    fun clearDraftProducts() {
+-        draftProductsState.value = emptyList()
+-    }
+-
+-    fun addPurchase(purchase: Purchase, products: List<Product>) {
+-        //Guarda la compra al inicio de la lista y vincula sus productos
+-        purchasesState.value = listOf(purchase) + purchasesState.value
+-        if (products.isNotEmpty()) {
+-            productsState.value = productsState.value + (purchase.id to products)
+-        }
+-        clearDraftProducts()//Limpiar el borrador
+-    }
+-
+-    fun updatePurchase(updated: Purchase) {
+-        purchasesState.value = purchasesState.value.map { purchase ->
+-            if (purchase.id == updated.id) updated else purchase
+-        }
+-    }
+-
+-    fun deletePurchase(purchaseId: String) {
+-        purchasesState.value = purchasesState.value.filterNot { it.id == purchaseId }
+-        productsState.value = productsState.value - purchaseId
+-    }
+-
+-    fun updateProduct(purchaseId: String, updated: Product) {
+-        val current = productsState.value[purchaseId].orEmpty()
+-        val updatedList = current.map { product ->
+-            if (product.id == updated.id) updated else product
+-        }
+-        if (updatedList.isNotEmpty()) {
+-            productsState.value = productsState.value + (purchaseId to updatedList)
+-        }
+-    }
+-
+-    fun deleteProduct(purchaseId: String, productId: String) {
+-        val current = productsState.value[purchaseId].orEmpty()
+-        val updatedList = current.filterNot { it.id == productId }
+-        if (updatedList.isEmpty()) {
+-            productsState.value = productsState.value - purchaseId
+-        } else {
+-            productsState.value = productsState.value + (purchaseId to updatedList)
+-        }
+-    }
+-
+-    fun getInitialChatMessages(): List<ChatMessage> {
+-        return listOf(
+-            ChatMessage(id = "m1", message = "Hola, soy tu asistente de consumos.", isFromUser = false),
+-            ChatMessage(id = "m2", message = "Podés preguntar por precios o historial.", isFromUser = false)
+-        )
+-    }
+-}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/RoomWalletRepository.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/RoomWalletRepository.kt
+new file mode 100644
+index 0000000..df397da
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/RoomWalletRepository.kt
+@@ -0,0 +1,137 @@
++package com.undef.superahorro.caparrozruiz.data.repository
++
++import androidx.datastore.core.DataStore
++import androidx.datastore.preferences.core.Preferences
++import androidx.datastore.preferences.core.booleanPreferencesKey
++import androidx.datastore.preferences.core.edit
++import androidx.datastore.preferences.core.floatPreferencesKey
++import androidx.datastore.preferences.core.stringPreferencesKey
++import com.undef.superahorro.caparrozruiz.data.local.dao.ProductDao
++import com.undef.superahorro.caparrozruiz.data.local.dao.PurchaseDao
++import com.undef.superahorro.caparrozruiz.data.local.entity.ProductEntity
++import com.undef.superahorro.caparrozruiz.data.local.entity.PurchaseEntity
++import com.undef.superahorro.caparrozruiz.data.local.entity.toEntity
++import com.undef.superahorro.caparrozruiz.data.model.Product
++import com.undef.superahorro.caparrozruiz.data.model.Purchase
++import com.undef.superahorro.caparrozruiz.data.model.User
++import kotlinx.coroutines.flow.Flow
++import kotlinx.coroutines.flow.MutableStateFlow
++import kotlinx.coroutines.flow.StateFlow
++import kotlinx.coroutines.flow.asStateFlow
++import kotlinx.coroutines.flow.map
++
++class RoomWalletRepository(
++    private val purchaseDao: PurchaseDao,
++    private val productDao: ProductDao,
++    private val dataStore: DataStore<Preferences>
++) : WalletRepository {
++
++    private val _draftProducts = MutableStateFlow<List<Product>>(emptyList())
++
++    companion object {
++        val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
++        val USER_NAME = stringPreferencesKey("user_name")
++        val USER_EMAIL = stringPreferencesKey("user_email")
++        val USER_CITY = stringPreferencesKey("user_city")
++        val USER_BUDGET = floatPreferencesKey("user_monthly_budget")
++        val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
++        val MONTHLY_SUMMARY_ENABLED = booleanPreferencesKey("monthly_summary_enabled")
++    }
++
++    override fun observePurchases(): Flow<List<Purchase>> =
++        purchaseDao.observeAll().map { list -> list.map { it.toDomain() } }
++
++    override fun observeProductsByPurchaseId(): Flow<Map<Long, List<Product>>> =
++        productDao.observeAll().map { list ->
++            list.groupBy { it.purchaseId }.mapValues { (_, products) -> products.map { it.toDomain() } }
++        }
++
++    override fun observeDraftProducts(): Flow<List<Product>> = _draftProducts.asStateFlow()
++
++    override fun observeCurrentUser(): Flow<User> =
++        dataStore.data.map { prefs ->
++            User(
++                name = prefs[USER_NAME] ?: "Usuario",
++                email = prefs[USER_EMAIL] ?: "",
++                city = prefs[USER_CITY] ?: "",
++                monthlyBudget = (prefs[USER_BUDGET] ?: 265000f).toDouble()
++            )
++        }
++
++    override fun observeIsLoggedIn(): Flow<Boolean> =
++        dataStore.data.map { prefs -> prefs[IS_LOGGED_IN] ?: false }
++
++    override fun observeNotificationsEnabled(): Flow<Boolean> =
++        dataStore.data.map { prefs -> prefs[NOTIFICATIONS_ENABLED] ?: true }
++
++    override fun observeMonthlySummaryEnabled(): Flow<Boolean> =
++        dataStore.data.map { prefs -> prefs[MONTHLY_SUMMARY_ENABLED] ?: false }
++
++    override suspend fun addDraftProduct(product: Product) {
++        _draftProducts.value = _draftProducts.value + product
++    }
++
++    override suspend fun removeDraftProduct(productId: Long) {
++        _draftProducts.value = _draftProducts.value.filterNot { it.id == productId }
++    }
++
++    override suspend fun addPurchase(purchase: Purchase, products: List<Product>) {
++        val newId = purchaseDao.insert(purchase.toEntity())
++        if (products.isNotEmpty()) {
++            productDao.insertAll(products.map { it.toEntity(newId) })
++        }
++        _draftProducts.value = emptyList()
++    }
++
++    override suspend fun updatePurchase(purchase: Purchase) {
++        purchaseDao.update(purchase.toEntity())
++    }
++
++    override suspend fun deletePurchase(purchaseId: Long) {
++        purchaseDao.deleteById(purchaseId)
++    }
++
++    override suspend fun updateProduct(purchaseId: Long, product: Product) {
++        productDao.update(product.toEntity(purchaseId))
++    }
++
++    override suspend fun deleteProduct(purchaseId: Long, productId: Long) {
++        productDao.deleteById(productId)
++    }
++
++    override suspend fun saveUser(user: User) {
++        dataStore.edit { prefs ->
++            prefs[USER_NAME] = user.name
++            prefs[USER_EMAIL] = user.email
++            prefs[USER_CITY] = user.city
++            prefs[USER_BUDGET] = user.monthlyBudget.toFloat()
++        }
++    }
++
++    override suspend fun setLoggedIn(logged: Boolean) {
++        dataStore.edit { prefs -> prefs[IS_LOGGED_IN] = logged }
++    }
++
++    override suspend fun setNotificationsEnabled(enabled: Boolean) {
++        dataStore.edit { prefs -> prefs[NOTIFICATIONS_ENABLED] = enabled }
++    }
++
++    override suspend fun setMonthlySummaryEnabled(enabled: Boolean) {
++        dataStore.edit { prefs -> prefs[MONTHLY_SUMMARY_ENABLED] = enabled }
++    }
++
++    override suspend fun ensureSeedData() {
++        if (purchaseDao.count() > 0) return
++        val p1 = purchaseDao.insert(PurchaseEntity(market = "Carrefour", date = "2026-05-01", time = "10:15", total = 38650.0))
++        val p2 = purchaseDao.insert(PurchaseEntity(market = "Disco", date = "2026-04-29", time = "18:40", total = 23400.0))
++        val p3 = purchaseDao.insert(PurchaseEntity(market = "Coto", date = "2026-04-27", time = "12:10", total = 41200.0))
++        purchaseDao.insert(PurchaseEntity(market = "Dia", date = "2026-04-24", time = "20:05", total = 15780.0))
++        productDao.insertAll(listOf(
++            ProductEntity(purchaseId = p1, code = "779123", name = "Arroz largo", description = "Bolsa 1kg", quantity = 2, price = 1800.0),
++            ProductEntity(purchaseId = p1, code = "779456", name = "Aceite", description = "Girasol 900ml", quantity = 1, price = 3200.0),
++            ProductEntity(purchaseId = p2, code = "779111", name = "Leche", description = "Entera 1L", quantity = 4, price = 1100.0),
++            ProductEntity(purchaseId = p3, code = "779333", name = "Fideos", description = "Spaghetti 500g", quantity = 2, price = 1250.0),
++            ProductEntity(purchaseId = p3, code = "779555", name = "Queso", description = "Cremoso 300g", quantity = 1, price = 3600.0)
++        ))
++    }
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/WalletRepository.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/WalletRepository.kt
+new file mode 100644
+index 0000000..465a0cb
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/repository/WalletRepository.kt
+@@ -0,0 +1,29 @@
++package com.undef.superahorro.caparrozruiz.data.repository
++
++import com.undef.superahorro.caparrozruiz.data.model.Product
++import com.undef.superahorro.caparrozruiz.data.model.Purchase
++import com.undef.superahorro.caparrozruiz.data.model.User
++import kotlinx.coroutines.flow.Flow
++
++interface WalletRepository {
++    fun observePurchases(): Flow<List<Purchase>>
++    fun observeProductsByPurchaseId(): Flow<Map<Long, List<Product>>>
++    fun observeDraftProducts(): Flow<List<Product>>
++    fun observeCurrentUser(): Flow<User>
++    fun observeIsLoggedIn(): Flow<Boolean>
++    fun observeNotificationsEnabled(): Flow<Boolean>
++    fun observeMonthlySummaryEnabled(): Flow<Boolean>
++
++    suspend fun addDraftProduct(product: Product)
++    suspend fun removeDraftProduct(productId: Long)
++    suspend fun addPurchase(purchase: Purchase, products: List<Product>)
++    suspend fun updatePurchase(purchase: Purchase)
++    suspend fun deletePurchase(purchaseId: Long)
++    suspend fun updateProduct(purchaseId: Long, product: Product)
++    suspend fun deleteProduct(purchaseId: Long, productId: Long)
++    suspend fun saveUser(user: User)
++    suspend fun setLoggedIn(logged: Boolean)
++    suspend fun setNotificationsEnabled(enabled: Boolean)
++    suspend fun setMonthlySummaryEnabled(enabled: Boolean)
++    suspend fun ensureSeedData()
++}
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
+index 3bb3876..fb7ed0c 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
+@@ -7,13 +7,17 @@ import androidx.compose.material3.NavigationBarItem
+ import androidx.compose.material3.Scaffold
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.collectAsState
++import androidx.compose.runtime.getValue
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.res.stringResource
++import androidx.lifecycle.viewmodel.compose.viewModel
+ import androidx.navigation.NavGraph.Companion.findStartDestination
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.currentBackStackEntryAsState
+ import androidx.navigation.compose.rememberNavController
++import com.undef.superahorro.caparrozruiz.ui.viewmodel.AuthViewModel
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.ForgotPasswordScreen
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.LoginScreen
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.RegisterScreen
+@@ -67,10 +71,12 @@ fun SuperAhorroNavHost() {
+             modifier = Modifier.padding(innerPadding)
+         ) {
+             composable(AppRoute.Splash) {
++                val authVm: AuthViewModel = viewModel()
++                val authState by authVm.uiState.collectAsState()
+                 SplashScreen(
+                     onSplashFinished = {
+-                        //Redirige a LoginScreen y elimina el SplashScreen de la pila
+-                        navController.navigate(AppRoute.Login) {
++                        val dest = if (authState.isLoggedIn) AppRoute.Home else AppRoute.Login
++                        navController.navigate(dest) {
+                             popUpTo(AppRoute.Splash) { inclusive = true }
+                         }
+                     }
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/AuthUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/AuthUiState.kt
+new file mode 100644
+index 0000000..509f225
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/AuthUiState.kt
+@@ -0,0 +1,10 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++data class AuthUiState(
++    val email: String = "",
++    val password: String = "",
++    val name: String = "",
++    val isLoading: Boolean = false,
++    val isLoggedIn: Boolean = false,
++    val forgotEmailSent: Boolean = false
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HistoryUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HistoryUiState.kt
+new file mode 100644
+index 0000000..b1a56b9
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HistoryUiState.kt
+@@ -0,0 +1,11 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++import com.undef.superahorro.caparrozruiz.data.model.Product
++import com.undef.superahorro.caparrozruiz.data.model.Purchase
++
++data class HistoryUiState(
++    val purchases: List<Purchase> = emptyList(),
++    val productsByPurchaseId: Map<Long, List<Product>> = emptyMap(),
++    val editingPurchase: Purchase? = null,
++    val editingProduct: Product? = null
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HomeUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HomeUiState.kt
+new file mode 100644
+index 0000000..a19fb49
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/HomeUiState.kt
+@@ -0,0 +1,9 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++import com.undef.superahorro.caparrozruiz.data.model.Purchase
++
++data class HomeUiState(
++    val purchases: List<Purchase> = emptyList(),
++    val userName: String = "",
++    val monthlyBudget: Double = 0.0
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/NewPurchaseUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/NewPurchaseUiState.kt
+new file mode 100644
+index 0000000..9af831d
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/NewPurchaseUiState.kt
+@@ -0,0 +1,22 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++import com.undef.superahorro.caparrozruiz.data.model.Product
++
++data class NewPurchaseUiState(
++    val market: String = "",
++    val date: String = "",
++    val time: String = "",
++    val total: String = "",
++    val ticketUri: String = "",
++    val ticketStatus: String = "",
++    val products: List<Product> = emptyList(),
++    val computedTotal: Double = 0.0,
++    val isSaving: Boolean = false
++)
++
++data class NewProductUiState(
++    val name: String = "",
++    val description: String = "",
++    val quantity: String = "",
++    val price: String = ""
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/ProfileUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/ProfileUiState.kt
+new file mode 100644
+index 0000000..56db135
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/ProfileUiState.kt
+@@ -0,0 +1,8 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++data class ProfileUiState(
++    val name: String = "",
++    val email: String = "",
++    val city: String = "",
++    val monthlyBudget: String = ""
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/SettingsUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/SettingsUiState.kt
+new file mode 100644
+index 0000000..2b9d1f0
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/SettingsUiState.kt
+@@ -0,0 +1,6 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++data class SettingsUiState(
++    val notificationsEnabled: Boolean = true,
++    val monthlySummaryEnabled: Boolean = false
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/StatsUiState.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/StatsUiState.kt
+new file mode 100644
+index 0000000..681490c
+--- /dev/null
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/state/StatsUiState.kt
+@@ -0,0 +1,15 @@
++package com.undef.superahorro.caparrozruiz.ui.state
++
++import androidx.compose.ui.graphics.Color
++
++enum class StatsMode { Daily, Monthly }
++
++data class ChartEntry(val label: String, val value: Double)
++
++data class CategorySlice(val label: String, val value: Double, val color: Color)
++
++data class StatsUiState(
++    val mode: StatsMode = StatsMode.Daily,
++    val entries: List<ChartEntry> = emptyList(),
++    val categories: List<CategorySlice> = emptyList()
++)
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
+index 515bcb7..6e9acd9 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
+@@ -2,7 +2,7 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
+ 
+ import androidx.lifecycle.ViewModel
+ import com.undef.superahorro.caparrozruiz.data.model.ChatMessage
+-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
++
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.StateFlow
+ import kotlinx.coroutines.flow.asStateFlow
+@@ -15,7 +15,10 @@ data class ChatUiState(
+ class ChatViewModel : ViewModel() {
+ 
+     private val _uiState = MutableStateFlow(
+-        ChatUiState(messages = FakeWalletRepository.getInitialChatMessages())
++        ChatUiState(messages = listOf(
++            ChatMessage(id = "m1", message = "Hola, soy tu asistente de consumos.", isFromUser = false),
++            ChatMessage(id = "m2", message = "Podés preguntar por precios o historial.", isFromUser = false)
++        ))
+     )
+     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+ 
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
+index 7068c04..d0f18df 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
+@@ -42,7 +42,7 @@ class StatsViewModel : ViewModel() {
+                 )
+                 return@collectLatest
+             }
+-        )
++        }
+     }
+ 
+     private fun buildEntries(purchases: List<Purchase>, mode: StatsMode): List<ChartEntry> {
+-- 
+2.43.0
+
