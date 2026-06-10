@@ -47,6 +47,8 @@
     <string name="settings_email_button">Enviar consulta por email</string>
     <string name="settings_email_chooser">Enviar consulta con</string>
     <string name="settings_email_subject">Consulta desde Super Ahorro</string>
+    <string name="settings_sync_button">Sincronizar compras</string>
+    <string name="settings_syncing_button">Sincronizando...</string>
     <string name="settings_logout_button">Cerrar sesión</string>
 
     <string name="history_title">Historial de compras</string>

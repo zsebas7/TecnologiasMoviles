@@ -13,4 +13,12 @@ object RetrofitClient {
             .build()
             .create(PromotionApiService::class.java)
     }
+
+    val syncApiService: SyncApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SyncApiService::class.java)
+    }
 }

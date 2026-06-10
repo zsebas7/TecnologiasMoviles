@@ -47,6 +47,8 @@
     <string name="settings_email_button">Send support email</string>
     <string name="settings_email_chooser">Send inquiry with</string>
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
+    <string name="settings_sync_button">Sync purchases</string>
+    <string name="settings_syncing_button">Syncing...</string>
     <string name="settings_logout_button">Log out</string>
 
     <string name="history_title">Purchase history</string>
