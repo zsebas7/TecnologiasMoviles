@@ -30,6 +30,10 @@ class HistoryViewModel : ViewModel() {
         }
     }
 
+    fun setSearchQuery(query: String) {
+        _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
     fun findPurchaseById(id: Long): Purchase? {
         return _uiState.value.purchases.firstOrNull { it.id == id }
     }

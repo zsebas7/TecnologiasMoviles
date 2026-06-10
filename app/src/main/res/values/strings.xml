@@ -53,6 +53,7 @@
 
     <string name="history_title">Historial de compras</string>
     <string name="history_subtitle">Ordenadas por fecha</string>
+    <string name="history_search_placeholder">Buscar por supermercado</string>
     <string name="history_edit_button">Editar</string>
     <string name="history_delete_button">Eliminar</string>
     <string name="history_confirm_delete_title">Eliminar compra</string>
