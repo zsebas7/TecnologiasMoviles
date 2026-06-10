@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
-import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsMode
+import com.undef.superahorro.caparrozruiz.ui.state.StatsMode
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsViewModel
 import androidx.compose.foundation.Canvas
 

@@ -35,14 +35,15 @@ fun PurchaseDetailScreen(
     purchaseId: String,
     viewModel: HistoryViewModel = viewModel()
 ) {
+    val id = purchaseId.toLongOrNull() ?: -1L
     val locale = LocalConfiguration.current.locales[0]
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val purchase = uiState.purchases.firstOrNull { it.id == purchaseId }
-    val products = uiState.productsByPurchaseId[purchaseId].orEmpty()
+    val purchase = uiState.purchases.firstOrNull { it.id == id }
+    val products = uiState.productsByPurchaseId[id].orEmpty()
     val editingPurchase = uiState.editingPurchase
     val editingProduct = uiState.editingProduct
-    var deletePurchaseId by remember { mutableStateOf<String?>(null) }
-    var deleteProductId by remember { mutableStateOf<String?>(null) }
+    var deletePurchaseId by remember { mutableStateOf<Long?>(null) }
+    var deleteProductId by remember { mutableStateOf<Long?>(null) }
 
     Column(
         modifier = Modifier
@@ -80,7 +81,7 @@ fun PurchaseDetailScreen(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            deletePurchaseId?.let(viewModel::deletePurchase)
+                            deletePurchaseId?.let { viewModel.deletePurchase(it) }
                             deletePurchaseId = null
                         }
                     ) {
@@ -96,7 +97,7 @@ fun PurchaseDetailScreen(
                 text = { Text(text = stringResource(R.string.purchase_detail_delete_message)) }
             )
         }
-        if (editingPurchase != null && editingPurchase.id == purchaseId) {
+        if (editingPurchase != null && editingPurchase.id == id) {
             EditPurchaseCard(
                 market = editingPurchase.market,
                 date = editingPurchase.date,
@@ -104,7 +105,7 @@ fun PurchaseDetailScreen(
                 total = editingPurchase.total,
                 onDismiss = viewModel::clearEdits,
                 onSave = { market, date, time, total ->
-                    viewModel.updatePurchase(purchaseId, market, date, time, total)
+                    viewModel.updatePurchase(id, market, date, time, total)
                 }
             )
         }
@@ -127,7 +128,7 @@ fun PurchaseDetailScreen(
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = { viewModel.startEditProduct(purchaseId, product.id) }) {
+                        OutlinedButton(onClick = { viewModel.startEditProduct(id, product.id) }) {
                             Text(text = stringResource(R.string.purchase_detail_edit_product_button))
                         }
                         OutlinedButton(onClick = { deleteProductId = product.id }) {
@@ -145,7 +146,7 @@ fun PurchaseDetailScreen(
                     onDismiss = viewModel::clearEdits,
                     onSave = { name, description, quantity, price ->
                         viewModel.updateProduct(
-                            purchaseId = purchaseId,
+                            purchaseId = id,
                             productId = editingProduct.id,
                             code = editingProduct.code,
                             name = name,
@@ -166,7 +167,7 @@ fun PurchaseDetailScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        deleteProductId?.let { viewModel.deleteProduct(purchaseId, it) }
+                        deleteProductId?.let { viewModel.deleteProduct(id, it) }
                         deleteProductId = null
                     }
                 ) {

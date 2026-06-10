@@ -35,7 +35,7 @@ fun HistoryScreen(
     viewModel: HistoryViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var deleteTargetId by remember { mutableStateOf<String?>(null) }
+    var deleteTargetId by remember { mutableStateOf<Long?>(null) }
 
     Column(
         modifier = Modifier
@@ -74,13 +74,13 @@ fun HistoryScreen(
                 PurchaseItem(
                     purchase = purchase,
                     currencyLabel = stringResource(R.string.common_currency_symbol),
-                    modifier = Modifier.clickable { onPurchaseSelected(purchase.id) }
+                    modifier = Modifier.clickable { onPurchaseSelected(purchase.id.toString()) }
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(top = 6.dp)
                 ) {
-                    OutlinedButton(onClick = { onPurchaseSelected(purchase.id) }) {
+                    OutlinedButton(onClick = { onPurchaseSelected(purchase.id.toString()) }) {
                         Text(text = stringResource(R.string.history_edit_button))
                     }
                     OutlinedButton(onClick = { deleteTargetId = purchase.id }) {
