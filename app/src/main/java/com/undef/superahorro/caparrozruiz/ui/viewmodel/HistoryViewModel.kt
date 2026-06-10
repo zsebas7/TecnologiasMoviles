@@ -2,53 +2,47 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.undef.superahorro.caparrozruiz.core.AppContainer
 import com.undef.superahorro.caparrozruiz.data.model.Product
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
+import com.undef.superahorro.caparrozruiz.ui.state.HistoryUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-data class HistoryUiState(
-    val purchases: List<Purchase> = emptyList(),
-    val productsByPurchaseId: Map<String, List<Product>> = emptyMap(),
-    val editingPurchase: Purchase? = null,
-    val editingProduct: Product? = null
-)
-
 class HistoryViewModel : ViewModel() {
-    private val repository = FakeWalletRepository
+    private val repository = AppContainer.walletRepository
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            repository.purchasesFlow().collectLatest { purchases ->
+            repository.observePurchases().collectLatest { purchases ->
                 _uiState.value = _uiState.value.copy(purchases = purchases)
             }
         }
         viewModelScope.launch {
-            repository.productsByPurchaseIdFlow().collectLatest { products ->
+            repository.observeProductsByPurchaseId().collectLatest { products ->
                 _uiState.value = _uiState.value.copy(productsByPurchaseId = products)
             }
         }
     }
 
-    fun findPurchaseById(id: String): Purchase? {
+    fun findPurchaseById(id: Long): Purchase? {
         return _uiState.value.purchases.firstOrNull { it.id == id }
     }
 
-    fun productsForPurchase(id: String): List<Product> {
+    fun productsForPurchase(id: Long): List<Product> {
         return _uiState.value.productsByPurchaseId[id].orEmpty()
     }
 
-    fun startEditPurchase(purchaseId: String) {
+    fun startEditPurchase(purchaseId: Long) {
         _uiState.value = _uiState.value.copy(editingPurchase = findPurchaseById(purchaseId))
     }
 
-    fun startEditProduct(purchaseId: String, productId: String) {
+    fun startEditProduct(purchaseId: Long, productId: Long) {
         val product = productsForPurchase(purchaseId).firstOrNull { it.id == productId }
         _uiState.value = _uiState.value.copy(editingProduct = product)
     }
@@ -58,7 +52,7 @@ class HistoryViewModel : ViewModel() {
     }
 
     fun updatePurchase(
-        purchaseId: String,
+        purchaseId: Long,
         market: String,
         date: String,
         time: String,
@@ -66,25 +60,29 @@ class HistoryViewModel : ViewModel() {
     ) {
         val current = findPurchaseById(purchaseId) ?: return
         if (market.isBlank() || total <= 0.0) return
-        repository.updatePurchase(
-            current.copy(
-                market = market,
-                date = date,
-                time = time,
-                total = total
+        viewModelScope.launch {
+            repository.updatePurchase(
+                current.copy(
+                    market = market,
+                    date = date,
+                    time = time,
+                    total = total
+                )
             )
-        )
-        clearEdits()
+            clearEdits()
+        }
     }
 
-    fun deletePurchase(purchaseId: String) {
-        repository.deletePurchase(purchaseId)
-        clearEdits()
+    fun deletePurchase(purchaseId: Long) {
+        viewModelScope.launch {
+            repository.deletePurchase(purchaseId)
+            clearEdits()
+        }
     }
 
     fun updateProduct(
-        purchaseId: String,
-        productId: String,
+        purchaseId: Long,
+        productId: Long,
         code: String,
         name: String,
         description: String,
@@ -92,22 +90,26 @@ class HistoryViewModel : ViewModel() {
         price: Double
     ) {
         if (name.isBlank() || quantity <= 0 || price <= 0.0) return
-        repository.updateProduct(
-            purchaseId,
-            Product(
-                id = productId,
-                code = code,
-                name = name,
-                description = description,
-                quantity = quantity,
-                price = price
+        viewModelScope.launch {
+            repository.updateProduct(
+                purchaseId,
+                Product(
+                    id = productId,
+                    code = code,
+                    name = name,
+                    description = description,
+                    quantity = quantity,
+                    price = price
+                )
             )
-        )
-        clearEdits()
+            clearEdits()
+        }
     }
 
-    fun deleteProduct(purchaseId: String, productId: String) {
-        repository.deleteProduct(purchaseId, productId)
-        clearEdits()
+    fun deleteProduct(purchaseId: Long, productId: Long) {
+        viewModelScope.launch {
+            repository.deleteProduct(purchaseId, productId)
+            clearEdits()
+        }
     }
 }
