@@ -1,0 +1,87 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 6f8078c..9c904e3 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -3,6 +3,7 @@
+     xmlns:tools="http://schemas.android.com/tools">
+ 
+     <application
++        android:name="com.undef.superahorro.caparrozruiz.SuperAhorroApplication"
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+         android:fullBackupContent="@xml/backup_rules"
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
+index 3bb3876..fb7ed0c 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/navigation/SuperAhorroNavHost.kt
+@@ -7,13 +7,17 @@ import androidx.compose.material3.NavigationBarItem
+ import androidx.compose.material3.Scaffold
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.collectAsState
++import androidx.compose.runtime.getValue
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.res.stringResource
++import androidx.lifecycle.viewmodel.compose.viewModel
+ import androidx.navigation.NavGraph.Companion.findStartDestination
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.currentBackStackEntryAsState
+ import androidx.navigation.compose.rememberNavController
++import com.undef.superahorro.caparrozruiz.ui.viewmodel.AuthViewModel
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.ForgotPasswordScreen
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.LoginScreen
+ import com.undef.superahorro.caparrozruiz.ui.screens.auth.RegisterScreen
+@@ -67,10 +71,12 @@ fun SuperAhorroNavHost() {
+             modifier = Modifier.padding(innerPadding)
+         ) {
+             composable(AppRoute.Splash) {
++                val authVm: AuthViewModel = viewModel()
++                val authState by authVm.uiState.collectAsState()
+                 SplashScreen(
+                     onSplashFinished = {
+-                        //Redirige a LoginScreen y elimina el SplashScreen de la pila
+-                        navController.navigate(AppRoute.Login) {
++                        val dest = if (authState.isLoggedIn) AppRoute.Home else AppRoute.Login
++                        navController.navigate(dest) {
+                             popUpTo(AppRoute.Splash) { inclusive = true }
+                         }
+                     }
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
+index 515bcb7..6e9acd9 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/ChatViewModel.kt
+@@ -2,7 +2,7 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
+ 
+ import androidx.lifecycle.ViewModel
+ import com.undef.superahorro.caparrozruiz.data.model.ChatMessage
+-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
++
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.StateFlow
+ import kotlinx.coroutines.flow.asStateFlow
+@@ -15,7 +15,10 @@ data class ChatUiState(
+ class ChatViewModel : ViewModel() {
+ 
+     private val _uiState = MutableStateFlow(
+-        ChatUiState(messages = FakeWalletRepository.getInitialChatMessages())
++        ChatUiState(messages = listOf(
++            ChatMessage(id = "m1", message = "Hola, soy tu asistente de consumos.", isFromUser = false),
++            ChatMessage(id = "m2", message = "Podés preguntar por precios o historial.", isFromUser = false)
++        ))
+     )
+     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+ 
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
+index 7068c04..d0f18df 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/viewmodel/StatsViewModel.kt
+@@ -42,7 +42,7 @@ class StatsViewModel : ViewModel() {
+                 )
+                 return@collectLatest
+             }
+-        )
++        }
+     }
+ 
+     private fun buildEntries(purchases: List<Purchase>, mode: StatsMode): List<ChartEntry> {

@@ -42,7 +42,7 @@ class StatsViewModel : ViewModel() {
                 )
                 return@collectLatest
             }
-        )
+        }
     }
 
     private fun buildEntries(purchases: List<Purchase>, mode: StatsMode): List<ChartEntry> {
