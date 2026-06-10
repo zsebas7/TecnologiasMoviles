@@ -32,6 +32,7 @@ import com.undef.superahorro.caparrozruiz.ui.screens.settings.SettingsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.splash.SplashScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.stats.StatsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.more.MoreScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.promotions.PromotionsScreen
 
 @Composable
 fun SuperAhorroNavHost() {
@@ -153,8 +154,12 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.More) {
                 MoreScreen(
                     onOpenProfile = { navController.navigate(AppRoute.Profile) },
-                    onOpenSettings = { navController.navigate(AppRoute.Settings) }
+                    onOpenSettings = { navController.navigate(AppRoute.Settings) },
+                    onOpenPromotions = { navController.navigate(AppRoute.Promotions) }
                 )
+            }
+            composable(AppRoute.Promotions) {
+                PromotionsScreen()
             }
             composable(AppRoute.Stats) {
                 StatsScreen()
