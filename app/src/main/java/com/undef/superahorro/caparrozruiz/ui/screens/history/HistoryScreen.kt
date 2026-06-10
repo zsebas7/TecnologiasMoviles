@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,7 +47,13 @@ fun HistoryScreen(
     ) {
         Text(text = stringResource(R.string.history_title), style = MaterialTheme.typography.headlineMedium)
         Text(text = stringResource(R.string.history_subtitle), style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedTextField(
+            value = uiState.searchQuery,
+            onValueChange = viewModel::setSearchQuery,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = stringResource(R.string.history_search_placeholder)) },
+            singleLine = true
+        )
         val editingPurchase = uiState.editingPurchase
         if (deleteTargetId != null) {
             AlertDialog(
@@ -70,7 +78,7 @@ fun HistoryScreen(
             )
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(uiState.purchases, key = { it.id }) { purchase ->
+            items(uiState.filteredPurchases, key = { it.id }) { purchase ->
                 PurchaseItem(
                     purchase = purchase,
                     currencyLabel = stringResource(R.string.common_currency_symbol),

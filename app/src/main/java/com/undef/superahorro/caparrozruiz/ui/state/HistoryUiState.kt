@@ -5,7 +5,12 @@ import com.undef.superahorro.caparrozruiz.data.model.Purchase
 
 data class HistoryUiState(
     val purchases: List<Purchase> = emptyList(),
+    val searchQuery: String = "",
     val productsByPurchaseId: Map<Long, List<Product>> = emptyMap(),
     val editingPurchase: Purchase? = null,
     val editingProduct: Product? = null
-)
+) {
+    val filteredPurchases: List<Purchase>
+        get() = if (searchQuery.isBlank()) purchases
+        else purchases.filter { it.market.contains(searchQuery, ignoreCase = true) }
+}

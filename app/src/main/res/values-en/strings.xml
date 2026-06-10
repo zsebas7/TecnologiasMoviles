@@ -53,6 +53,7 @@
 
     <string name="history_title">Purchase history</string>
     <string name="history_subtitle">Ordered by date</string>
+    <string name="history_search_placeholder">Search by market</string>
     <string name="history_edit_button">Edit</string>
     <string name="history_delete_button">Delete</string>
     <string name="history_confirm_delete_title">Delete purchase</string>
