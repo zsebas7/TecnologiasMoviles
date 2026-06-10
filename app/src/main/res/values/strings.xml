@@ -117,7 +117,17 @@
     <string name="more_profile_subtitle">Actualiza tus datos</string>
     <string name="more_settings_title">Configuración</string>
     <string name="more_settings_subtitle">Notificaciones y accesos</string>
+    <string name="more_promotions_title">Promociones online</string>
+    <string name="more_promotions_subtitle">Ver ofertas remotas</string>
     <string name="more_open_action">Abrir</string>
+
+    <string name="promotions_title">Promociones online</string>
+    <string name="promotions_subtitle">Datos remotos de prueba</string>
+    <string name="promotions_loading">Cargando promociones...</string>
+    <string name="promotions_empty">No hay promociones disponibles.</string>
+    <string name="promotions_error">No se pudieron cargar las promociones.</string>
+    <string name="promotions_retry">Reintentar</string>
+    <string name="promotions_refresh">Actualizar</string>
 
     <string name="common_cancel">Cancelar</string>
     <string name="common_confirm">Confirmar</string>
