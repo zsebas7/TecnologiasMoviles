@@ -2,24 +2,34 @@ package com.undef.superahorro.caparrozruiz.ui.screens.history
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
@@ -51,18 +61,73 @@ fun PurchaseDetailScreen(
     var deletePurchaseId by remember { mutableStateOf<Long?>(null) }
     var deleteProductId by remember { mutableStateOf<Long?>(null) }
 
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(text = stringResource(R.string.purchase_detail_title), style = MaterialTheme.typography.headlineMedium)
         if (purchase != null) {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(text = purchase.market, style = MaterialTheme.typography.titleMedium)
-                    Text(text = stringResource(R.string.purchase_detail_date_time, purchase.date, purchase.time))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(text = purchase.market, style = MaterialTheme.typography.titleMedium)
+                            Text(text = stringResource(R.string.purchase_detail_date_time, purchase.date, purchase.time))
+                        }
+                        Box {
+                            var expanded by remember { mutableStateOf(false) }
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                            }
+                            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.purchase_detail_edit_button)) },
+                                    onClick = {
+                                        expanded = false
+                                        viewModel.startEditPurchase(purchase.id)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.purchase_detail_delete_button)) },
+                                    onClick = {
+                                        expanded = false
+                                        deletePurchaseId = purchase.id
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.purchase_detail_share_button)) },
+                                    onClick = {
+                                        expanded = false
+                                        val shareText = buildString {
+                                            appendLine("${purchase.market} - ${purchase.date} ${purchase.time}")
+                                            appendLine("Total: $currencySymbol ${"%.2f".format(locale, purchase.total)}")
+                                            if (products.isNotEmpty()) {
+                                                appendLine()
+                                                appendLine(productsTitle)
+                                                products.forEach { product ->
+                                                    appendLine("- ${product.name} x${product.quantity}")
+                                                }
+                                            }
+                                        }
+                                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "text/plain"
+                                            putExtra(Intent.EXTRA_TEXT, shareText)
+                                        }
+                                        val chooser = Intent.createChooser(sendIntent, shareChooserTitle)
+                                        context.startActivity(chooser)
+                                    }
+                                )
+                            }
+                        }
+                    }
                     Text(
                         text = stringResource(
                             R.string.purchase_detail_total,
@@ -70,37 +135,6 @@ fun PurchaseDetailScreen(
                         ),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = { viewModel.startEditPurchase(purchase.id) }) {
-                            Text(text = stringResource(R.string.purchase_detail_edit_button))
-                        }
-                        OutlinedButton(onClick = { deletePurchaseId = purchase.id }) {
-                            Text(text = stringResource(R.string.purchase_detail_delete_button))
-                        }
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            val shareText = buildString {
-                                appendLine("${purchase.market} - ${purchase.date} ${purchase.time}")
-                                appendLine("Total: $currencySymbol ${"%.2f".format(locale, purchase.total)}")
-                                if (products.isNotEmpty()) {
-                                    appendLine()
-                                    appendLine(productsTitle)
-                                    products.forEach { product ->
-                                        appendLine("- ${product.name} x${product.quantity}")
-                                    }
-                                }
-                            }
-                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, shareText)
-                            }
-                            val chooser = Intent.createChooser(sendIntent, shareChooserTitle)
-                            context.startActivity(chooser)
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.purchase_detail_share_button))
-                    }
                 }
             }
         }
