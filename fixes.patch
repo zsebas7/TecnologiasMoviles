@@ -1,0 +1,146 @@
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Product.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Product.kt
+index 6b3863d..09290d6 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Product.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Product.kt
+@@ -1,7 +1,7 @@
+ package com.undef.superahorro.caparrozruiz.data.model
+ 
+ data class Product(
+-    val id: Long,
++    val id: Long = 0,
+     val code: String,
+     val name: String,
+     val description: String,
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Purchase.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Purchase.kt
+index 01959c5..ab9cf94 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Purchase.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/data/model/Purchase.kt
+@@ -1,7 +1,7 @@
+ package com.undef.superahorro.caparrozruiz.data.model
+ 
+ data class Purchase(
+-    val id: Long,
++    val id: Long = 0,
+     val market: String,
+     val date: String,
+     val time: String,
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/HistoryScreen.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/HistoryScreen.kt
+index 8f86d35..b3b4854 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/HistoryScreen.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/HistoryScreen.kt
+@@ -35,7 +35,7 @@ fun HistoryScreen(
+     viewModel: HistoryViewModel = viewModel()
+ ) {
+     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+-    var deleteTargetId by remember { mutableStateOf<String?>(null) }
++    var deleteTargetId by remember { mutableStateOf<Long?>(null) }
+ 
+     Column(
+         modifier = Modifier
+@@ -74,13 +74,13 @@ fun HistoryScreen(
+                 PurchaseItem(
+                     purchase = purchase,
+                     currencyLabel = stringResource(R.string.common_currency_symbol),
+-                    modifier = Modifier.clickable { onPurchaseSelected(purchase.id) }
++                    modifier = Modifier.clickable { onPurchaseSelected(purchase.id.toString()) }
+                 )
+                 Row(
+                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                     modifier = Modifier.padding(top = 6.dp)
+                 ) {
+-                    OutlinedButton(onClick = { onPurchaseSelected(purchase.id) }) {
++                    OutlinedButton(onClick = { onPurchaseSelected(purchase.id.toString()) }) {
+                         Text(text = stringResource(R.string.history_edit_button))
+                     }
+                     OutlinedButton(onClick = { deleteTargetId = purchase.id }) {
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/PurchaseDetailScreen.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/PurchaseDetailScreen.kt
+index a7f1329..dab27ed 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/PurchaseDetailScreen.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/history/PurchaseDetailScreen.kt
+@@ -35,14 +35,15 @@ fun PurchaseDetailScreen(
+     purchaseId: String,
+     viewModel: HistoryViewModel = viewModel()
+ ) {
++    val id = purchaseId.toLongOrNull() ?: -1L
+     val locale = LocalConfiguration.current.locales[0]
+     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+-    val purchase = uiState.purchases.firstOrNull { it.id == purchaseId }
+-    val products = uiState.productsByPurchaseId[purchaseId].orEmpty()
++    val purchase = uiState.purchases.firstOrNull { it.id == id }
++    val products = uiState.productsByPurchaseId[id].orEmpty()
+     val editingPurchase = uiState.editingPurchase
+     val editingProduct = uiState.editingProduct
+-    var deletePurchaseId by remember { mutableStateOf<String?>(null) }
+-    var deleteProductId by remember { mutableStateOf<String?>(null) }
++    var deletePurchaseId by remember { mutableStateOf<Long?>(null) }
++    var deleteProductId by remember { mutableStateOf<Long?>(null) }
+ 
+     Column(
+         modifier = Modifier
+@@ -80,7 +81,7 @@ fun PurchaseDetailScreen(
+                 confirmButton = {
+                     TextButton(
+                         onClick = {
+-                            deletePurchaseId?.let(viewModel::deletePurchase)
++                            deletePurchaseId?.let { viewModel.deletePurchase(it) }
+                             deletePurchaseId = null
+                         }
+                     ) {
+@@ -96,7 +97,7 @@ fun PurchaseDetailScreen(
+                 text = { Text(text = stringResource(R.string.purchase_detail_delete_message)) }
+             )
+         }
+-        if (editingPurchase != null && editingPurchase.id == purchaseId) {
++        if (editingPurchase != null && editingPurchase.id == id) {
+             EditPurchaseCard(
+                 market = editingPurchase.market,
+                 date = editingPurchase.date,
+@@ -104,7 +105,7 @@ fun PurchaseDetailScreen(
+                 total = editingPurchase.total,
+                 onDismiss = viewModel::clearEdits,
+                 onSave = { market, date, time, total ->
+-                    viewModel.updatePurchase(purchaseId, market, date, time, total)
++                    viewModel.updatePurchase(id, market, date, time, total)
+                 }
+             )
+         }
+@@ -127,7 +128,7 @@ fun PurchaseDetailScreen(
+                         )
+                     }
+                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+-                        OutlinedButton(onClick = { viewModel.startEditProduct(purchaseId, product.id) }) {
++                        OutlinedButton(onClick = { viewModel.startEditProduct(id, product.id) }) {
+                             Text(text = stringResource(R.string.purchase_detail_edit_product_button))
+                         }
+                         OutlinedButton(onClick = { deleteProductId = product.id }) {
+@@ -145,7 +146,7 @@ fun PurchaseDetailScreen(
+                     onDismiss = viewModel::clearEdits,
+                     onSave = { name, description, quantity, price ->
+                         viewModel.updateProduct(
+-                            purchaseId = purchaseId,
++                            purchaseId = id,
+                             productId = editingProduct.id,
+                             code = editingProduct.code,
+                             name = name,
+@@ -166,7 +167,7 @@ fun PurchaseDetailScreen(
+             confirmButton = {
+                 TextButton(
+                     onClick = {
+-                        deleteProductId?.let { viewModel.deleteProduct(purchaseId, it) }
++                        deleteProductId?.let { viewModel.deleteProduct(id, it) }
+                         deleteProductId = null
+                     }
+                 ) {
+diff --git a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/stats/StatsScreen.kt b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/stats/StatsScreen.kt
+index 5b5327c..e2a276c 100644
+--- a/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/stats/StatsScreen.kt
++++ b/app/src/main/java/com/undef/superahorro/caparrozruiz/ui/screens/stats/StatsScreen.kt
+@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
+ import androidx.lifecycle.compose.collectAsStateWithLifecycle
+ import androidx.lifecycle.viewmodel.compose.viewModel
+ import com.undef.superahorro.caparrozruiz.R
+-import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsMode
++import com.undef.superahorro.caparrozruiz.ui.state.StatsMode
+ import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsViewModel
+ import androidx.compose.foundation.Canvas
+ 
