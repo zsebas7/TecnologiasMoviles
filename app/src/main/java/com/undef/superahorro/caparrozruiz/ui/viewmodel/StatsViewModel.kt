@@ -3,44 +3,26 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.undef.superahorro.caparrozruiz.core.AppContainer
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
+import com.undef.superahorro.caparrozruiz.ui.state.CategorySlice
+import com.undef.superahorro.caparrozruiz.ui.state.ChartEntry
+import com.undef.superahorro.caparrozruiz.ui.state.StatsMode
+import com.undef.superahorro.caparrozruiz.ui.state.StatsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-enum class StatsMode {
-    Daily,
-    Monthly
-}
-
-data class ChartEntry(
-    val label: String,
-    val value: Double
-)
-
-data class CategorySlice(
-    val label: String,
-    val value: Double,
-    val color: Color
-)
-
-data class StatsUiState(
-    val mode: StatsMode = StatsMode.Daily,
-    val entries: List<ChartEntry> = emptyList(),
-    val categories: List<CategorySlice> = emptyList()
-)
-
 class StatsViewModel : ViewModel() {
-    private val repository = FakeWalletRepository
+    private val repository = AppContainer.walletRepository
     private val _uiState = MutableStateFlow(StatsUiState())
     val uiState: StateFlow<StatsUiState> = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
-            repository.purchasesFlow().collectLatest { purchases ->
+            repository.observePurchases().collectLatest { purchases ->
                 _uiState.value = _uiState.value.copy(
                     entries = buildEntries(purchases, _uiState.value.mode),
                     categories = buildCategories(purchases)
@@ -51,11 +33,15 @@ class StatsViewModel : ViewModel() {
 
     fun setMode(mode: StatsMode) {
         if (_uiState.value.mode == mode) return
-        val purchases = repository.purchasesFlow().value
-        _uiState.value = StatsUiState(
-            mode = mode,
-            entries = buildEntries(purchases, mode),
-            categories = buildCategories(purchases)
+        viewModelScope.launch {
+            repository.observePurchases().collectLatest { purchases ->
+                _uiState.value = StatsUiState(
+                    mode = mode,
+                    entries = buildEntries(purchases, mode),
+                    categories = buildCategories(purchases)
+                )
+                return@collectLatest
+            }
         )
     }
 

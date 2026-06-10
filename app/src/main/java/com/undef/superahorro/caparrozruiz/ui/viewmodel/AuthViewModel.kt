@@ -2,24 +2,29 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.undef.superahorro.caparrozruiz.core.AppContainer
+import com.undef.superahorro.caparrozruiz.data.model.User
+import com.undef.superahorro.caparrozruiz.ui.state.AuthUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-data class AuthUiState(
-    val email: String = "",
-    val password: String = "",
-    val name: String = "",
-    val isLoading: Boolean = false,
-    val forgotEmailSent: Boolean = false
-)
-
 class AuthViewModel : ViewModel() {
+    private val repository = AppContainer.walletRepository
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.observeIsLoggedIn().collectLatest { loggedIn ->
+                _uiState.value = _uiState.value.copy(isLoggedIn = loggedIn)
+            }
+        }
+    }
 
     fun onEmailChanged(value: String) {
         _uiState.value = _uiState.value.copy(email = value)
@@ -37,6 +42,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             delay(1200)
+            repository.setLoggedIn(true)
             _uiState.value = _uiState.value.copy(isLoading = false)
             onSuccess()
         }
@@ -46,6 +52,17 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             delay(1200)
+            if (_uiState.value.name.isNotBlank() && _uiState.value.email.isNotBlank()) {
+                repository.saveUser(
+                    User(
+                        name = _uiState.value.name,
+                        email = _uiState.value.email,
+                        city = "",
+                        monthlyBudget = 265000.0
+                    )
+                )
+            }
+            repository.setLoggedIn(true)
             _uiState.value = _uiState.value.copy(isLoading = false)
             onSuccess()
         }
