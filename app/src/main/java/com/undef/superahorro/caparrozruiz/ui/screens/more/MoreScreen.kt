@@ -19,7 +19,8 @@ import com.undef.superahorro.caparrozruiz.R
 @Composable
 fun MoreScreen(
     onOpenProfile: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
+    onOpenPromotions: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -37,6 +38,11 @@ fun MoreScreen(
             title = stringResource(R.string.more_settings_title),
             subtitle = stringResource(R.string.more_settings_subtitle),
             onClick = onOpenSettings
+        )
+        MoreItem(
+            title = stringResource(R.string.more_promotions_title),
+            subtitle = stringResource(R.string.more_promotions_subtitle),
+            onClick = onOpenPromotions
         )
     }
 }
