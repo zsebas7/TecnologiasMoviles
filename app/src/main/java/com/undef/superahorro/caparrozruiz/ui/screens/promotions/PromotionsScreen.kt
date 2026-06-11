@@ -43,19 +43,26 @@ fun PromotionsScreen(viewModel: PromotionsViewModel = viewModel()) {
             uiState.errorMessage != null -> {
                 Text(text = stringResource(R.string.promotions_error))
                 Text(text = uiState.errorMessage.orEmpty(), style = MaterialTheme.typography.bodySmall)
-                Button(onClick = viewModel::loadPromotions) {
+                Button(onClick = viewModel::refreshFromNetwork) {
                     Text(text = stringResource(R.string.promotions_retry))
                 }
             }
             uiState.promotions.isEmpty() -> {
                 Text(text = stringResource(R.string.promotions_empty))
-                Button(onClick = viewModel::loadPromotions) {
+                Button(onClick = viewModel::refreshFromNetwork) {
                     Text(text = stringResource(R.string.promotions_refresh))
                 }
             }
             else -> {
-                Button(onClick = viewModel::loadPromotions) {
+                Button(onClick = viewModel::refreshFromNetwork) {
                     Text(text = stringResource(R.string.promotions_refresh))
+                }
+                if (uiState.refreshError != null) {
+                    Text(
+                        text = uiState.refreshError.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(uiState.promotions, key = { it.id }) { promotion ->
