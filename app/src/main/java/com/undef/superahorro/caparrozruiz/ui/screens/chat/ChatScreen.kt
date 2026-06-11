@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -20,13 +21,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.withStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.ChatViewModel
+
+private fun parseBold(text: String): androidx.compose.ui.text.AnnotatedString = buildAnnotatedString {
+    val regex = Regex("\\*\\*([^*]+)\\*\\*")
+    var lastIndex = 0
+    regex.findAll(text).forEach { match ->
+        append(text.substring(lastIndex, match.range.first))
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+            append(match.groupValues[1])
+        }
+        lastIndex = match.range.last + 1
+    }
+    append(text.substring(lastIndex))
+}
 
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = viewModel()) {
@@ -48,12 +66,15 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = message.message,
+                        text = parseBold(message.message),
                         modifier = Modifier.padding(12.dp),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
+        }
+        if (uiState.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -64,10 +85,12 @@ fun ChatScreen(viewModel: ChatViewModel = viewModel()) {
                 onValueChange = viewModel::onInputChanged,
                 label = { Text(stringResource(R.string.chat_input_label)) },
                 modifier = Modifier.weight(1f),
-                singleLine = true
+                singleLine = true,
+                enabled = !uiState.isLoading
             )
             FilledIconButton(
                 onClick = viewModel::sendMessage,
+                enabled = !uiState.isLoading && uiState.input.isNotBlank(),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(44.dp)

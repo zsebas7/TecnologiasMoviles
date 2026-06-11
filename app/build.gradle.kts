@@ -29,6 +29,11 @@ android {
             "OCR_SPACE_API_KEY",
             "\"${localProperties.getProperty("OCR_SPACE_API_KEY", "")}\""
         )
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\""
+        )
     }
 
     buildTypes {

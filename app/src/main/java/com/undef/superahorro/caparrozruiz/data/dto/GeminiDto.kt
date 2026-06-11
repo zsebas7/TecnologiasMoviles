@@ -1,0 +1,24 @@
+package com.undef.superahorro.caparrozruiz.data.dto
+
+import com.google.gson.annotations.SerializedName
+
+data class GeminiRequest(
+    @SerializedName("contents") val contents: List<GeminiContent>
+)
+
+data class GeminiContent(
+    @SerializedName("parts") val parts: List<GeminiPart>
+)
+
+data class GeminiPart(
+    @SerializedName("text") val text: String? = null,
+    @SerializedName("thought") val thought: Boolean? = null
+)
+
+data class GeminiResponse(
+    @SerializedName("candidates") val candidates: List<GeminiCandidate>? = null
+)
+
+data class GeminiCandidate(
+    @SerializedName("content") val content: GeminiContent? = null
+)
