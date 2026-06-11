@@ -10,6 +10,6 @@ class PromotionsRepository(
     private val apiService: PromotionApiService
 ) {
     suspend fun getPromotions(): List<Promotion> = withContext(Dispatchers.IO) {
-        apiService.getPromotions().take(10).map { it.toDomain() }
+        apiService.getPromotions().products.map { it.toDomain() }
     }
 }
