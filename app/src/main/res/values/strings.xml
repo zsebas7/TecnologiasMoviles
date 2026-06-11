@@ -78,6 +78,7 @@
     <string name="purchase_detail_product_code">Código: %1$s</string>
     <string name="purchase_detail_share_button">Compartir compra</string>
     <string name="purchase_detail_share_chooser">Compartir compra con</string>
+    <string name="purchase_detail_ticket_label">Ticket de compra</string>
 
     <string name="purchase_new_title">Nueva compra</string>
     <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>
@@ -93,7 +94,7 @@
     <string name="purchase_new_ticket_title">Ticket de compra</string>
     <string name="purchase_new_ticket_gallery">Galería</string>
     <string name="purchase_new_ticket_camera">Cámara</string>
-    <string name="purchase_new_ticket_status">Adjunto simulado: %1$s</string>
+    <string name="purchase_new_ticket_attached">Ticket adjunto ✓</string>
 
     <string name="product_new_title">Nuevo producto</string>
     <string name="product_new_name_label">Nombre</string>
@@ -127,7 +128,7 @@
     <string name="more_open_action">Abrir</string>
 
     <string name="promotions_title">Promociones online</string>
-    <string name="promotions_subtitle">Datos remotos de prueba</string>
+    <string name="promotions_subtitle">Ofertas y descuentos del momento</string>
     <string name="promotions_loading">Cargando promociones...</string>
     <string name="promotions_empty">No hay promociones disponibles.</string>
     <string name="promotions_error">No se pudieron cargar las promociones.</string>

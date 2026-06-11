@@ -83,8 +83,8 @@ class NewPurchaseViewModel : ViewModel() {
         _productState.value = _productState.value.copy(price = value)
     }
 
-    fun setTicketStatus(value: String) {
-        _purchaseState.value = _purchaseState.value.copy(ticketStatus = value, ticketUri = value)
+    fun setTicketUri(uri: String) {
+        _purchaseState.value = _purchaseState.value.copy(ticketUri = uri, ticketStatus = "attached")
     }
 
     fun addProduct(onAdded: () -> Unit) {
