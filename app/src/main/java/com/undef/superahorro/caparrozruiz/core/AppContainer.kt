@@ -15,9 +15,12 @@ object AppContainer {
     lateinit var ocrRepository: OcrRepository
         private set
 
+    lateinit var database: AppDatabase
+        private set
+
     fun initialize(context: Context) {
         val appContext = context.applicationContext
-        val database = AppDatabase.getDatabase(appContext)
+        database = AppDatabase.getDatabase(appContext)
         val preferences = UserPreferencesDataSource(appContext)
         walletRepository = DefaultWalletRepository(
             purchaseDao = database.purchaseDao(),
