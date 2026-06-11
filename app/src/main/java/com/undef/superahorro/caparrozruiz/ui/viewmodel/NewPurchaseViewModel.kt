@@ -54,7 +54,7 @@ class NewPurchaseViewModel : ViewModel() {
     }
 
     fun onMarketChanged(value: String) {
-        _purchaseState.value = _purchaseState.value.copy(market = value)
+        _purchaseState.value = _purchaseState.value.copy(market = value, saveError = null)
     }
 
     fun onTotalChanged(value: String) {
@@ -64,7 +64,7 @@ class NewPurchaseViewModel : ViewModel() {
         } else {
             filtered
         }
-        _purchaseState.value = _purchaseState.value.copy(total = normalized)
+        _purchaseState.value = _purchaseState.value.copy(total = normalized, saveError = null)
     }
 
     fun onProductNameChanged(value: String) {
@@ -148,12 +148,24 @@ class NewPurchaseViewModel : ViewModel() {
 
     fun savePurchase(onSaved: () -> Unit) {
         viewModelScope.launch {
-            _purchaseState.value = _purchaseState.value.copy(isSaving = true)
+            _purchaseState.value = _purchaseState.value.copy(isSaving = true, saveError = null)
             val totalValue = _purchaseState.value.total.toDoubleOrNull()
                 ?: _purchaseState.value.computedTotal
-            if (_purchaseState.value.market.isBlank() || totalValue <= 0.0) {
-                _purchaseState.value = _purchaseState.value.copy(isSaving = false)
-                return@launch
+            when {
+                _purchaseState.value.market.isBlank() -> {
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isSaving = false,
+                        saveError = "Completá el nombre del comercio"
+                    )
+                    return@launch
+                }
+                totalValue <= 0.0 -> {
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isSaving = false,
+                        saveError = "El total debe ser mayor a cero"
+                    )
+                    return@launch
+                }
             }
             val purchase = Purchase(
                 id = 0,
