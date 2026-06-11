@@ -122,6 +122,30 @@ class NewPurchaseViewModel : ViewModel() {
         }
     }
 
+    fun analyzeTicket() {
+        val uri = _purchaseState.value.ticketUri
+        if (uri.isBlank()) return
+        viewModelScope.launch {
+            _purchaseState.value = _purchaseState.value.copy(isAnalyzingTicket = true, ocrError = null)
+            runCatching { AppContainer.ocrRepository.analyzeTicket(uri) }
+                .onSuccess { ticket ->
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isAnalyzingTicket = false,
+                        market = ticket.market.ifBlank { _purchaseState.value.market },
+                        date = ticket.date.ifBlank { _purchaseState.value.date },
+                        time = ticket.time.ifBlank { _purchaseState.value.time },
+                        total = ticket.total.ifBlank { _purchaseState.value.total }
+                    )
+                }
+                .onFailure { error ->
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isAnalyzingTicket = false,
+                        ocrError = error.message ?: "Error desconocido"
+                    )
+                }
+        }
+    }
+
     fun savePurchase(onSaved: () -> Unit) {
         viewModelScope.launch {
             _purchaseState.value = _purchaseState.value.copy(isSaving = true)
