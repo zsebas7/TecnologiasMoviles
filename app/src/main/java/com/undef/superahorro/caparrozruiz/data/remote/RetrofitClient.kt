@@ -8,7 +8,7 @@ object RetrofitClient {
 
     val promotionApiService: PromotionApiService by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl("https://dummyjson.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(PromotionApiService::class.java)
