@@ -50,12 +50,9 @@ class SettingsViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(isSyncing = true, syncError = "", syncMessage = "")
             runCatching {
                 val purchases = repository.observePurchases().first()
-                val user = repository.observeCurrentUser().first()
                 val body = buildString {
                     append("Purchases: ")
                     append(purchases.size)
-                    append(", Budget: ")
-                    append(user.monthlyBudget)
                 }
                 syncRepository.syncPurchases(
                     title = "SuperAhorro sync",

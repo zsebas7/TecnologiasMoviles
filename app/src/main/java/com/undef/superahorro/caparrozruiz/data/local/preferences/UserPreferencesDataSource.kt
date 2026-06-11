@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -24,7 +23,6 @@ class UserPreferencesDataSource(private val context: Context) {
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_EMAIL = stringPreferencesKey("user_email")
         val USER_CITY = stringPreferencesKey("user_city")
-        val MONTHLY_BUDGET = doublePreferencesKey("monthly_budget")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
         val MONTHLY_SUMMARY_ENABLED = booleanPreferencesKey("monthly_summary_enabled")
     }
@@ -39,8 +37,7 @@ class UserPreferencesDataSource(private val context: Context) {
             User(
                 name = preferences[Keys.USER_NAME] ?: "Martin Perez",
                 email = preferences[Keys.USER_EMAIL] ?: "martin.perez@email.com",
-                city = preferences[Keys.USER_CITY] ?: "Cordoba",
-                monthlyBudget = preferences[Keys.MONTHLY_BUDGET] ?: 265000.0
+                city = preferences[Keys.USER_CITY] ?: "Cordoba"
             )
         }
 
@@ -63,7 +60,6 @@ class UserPreferencesDataSource(private val context: Context) {
             preferences[Keys.USER_NAME] = user.name
             preferences[Keys.USER_EMAIL] = user.email
             preferences[Keys.USER_CITY] = user.city
-            preferences[Keys.MONTHLY_BUDGET] = user.monthlyBudget
         }
     }
 

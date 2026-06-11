@@ -4,6 +4,6 @@ import com.undef.superahorro.caparrozruiz.data.model.Purchase
 
 data class HomeUiState(
     val userName: String = "",
-    val monthlyBudget: Double = 0.0,
+    val monthlyTotal: Double = 0.0,
     val purchases: List<Purchase> = emptyList()
 )

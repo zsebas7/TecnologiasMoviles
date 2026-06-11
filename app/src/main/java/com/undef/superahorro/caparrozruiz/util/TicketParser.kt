@@ -22,14 +22,24 @@ object TicketParser {
             line.none { it.isDigit() }
         }.orEmpty()
 
-    // DD/MM/YYYY o DD-MM-YYYY → convierte a YYYY-MM-DD
+    // DD/MM/YYYY, DD-MM-YYYY, DD/MM/YY o DD-MM-YY → convierte a YYYY-MM-DD
+    // Busca primero cerca de la palabra "Fecha" para evitar falsos positivos en códigos/barcodes
     private fun extractDate(text: String): String {
-        val ddmmyyyy = Regex("""(\d{2})[/\-](\d{2})[/\-](\d{4})""")
-        ddmmyyyy.find(text)?.let { m ->
-            return "${m.groupValues[3]}-${m.groupValues[2]}-${m.groupValues[1]}"
+        val searchAreas = buildList {
+            Regex("""[Ff]echa[:\s]*(.{0,30})""").find(text)?.groupValues?.get(1)?.let { add(it) }
+            add(text)
         }
-        val yyyymmdd = Regex("""(\d{4})-(\d{2})-(\d{2})""")
-        yyyymmdd.find(text)?.let { m -> return m.value }
+        for (area in searchAreas) {
+            Regex("""(\d{2})[/\-](\d{2})[/\-](\d{4})""").find(area)?.let { m ->
+                return "${m.groupValues[3]}-${m.groupValues[2]}-${m.groupValues[1]}"
+            }
+            Regex("""(\d{4})-(\d{2})-(\d{2})""").find(area)?.let { m -> return m.value }
+            Regex("""(\d{2})[/\-](\d{2})[/\-](\d{2})""").find(area)?.let { m ->
+                val yy = m.groupValues[3].toInt()
+                val yyyy = if (yy <= 30) 2000 + yy else 1900 + yy
+                return "$yyyy-${m.groupValues[2]}-${m.groupValues[1]}"
+            }
+        }
         return ""
     }
 

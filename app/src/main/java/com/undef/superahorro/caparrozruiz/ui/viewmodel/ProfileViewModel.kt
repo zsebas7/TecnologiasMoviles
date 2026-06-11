@@ -23,42 +23,35 @@ class ProfileViewModel : ViewModel() {
                 _uiState.value = _uiState.value.copy(
                     name = user.name,
                     email = user.email,
-                    city = user.city,
-                    monthlyBudget = user.monthlyBudget.toString()
+                    city = user.city
                 )
             }
         }
     }
 
     fun onNameChanged(value: String) {
-        _uiState.value = _uiState.value.copy(name = value)
+        _uiState.value = _uiState.value.copy(name = value, saved = false)
     }
 
     fun onEmailChanged(value: String) {
-        _uiState.value = _uiState.value.copy(email = value)
+        _uiState.value = _uiState.value.copy(email = value, saved = false)
     }
 
     fun onCityChanged(value: String) {
-        _uiState.value = _uiState.value.copy(city = value)
-    }
-
-    fun onMonthlyBudgetChanged(value: String) {
-        val normalized = value.filter { it.isDigit() || it == '.' }
-        _uiState.value = _uiState.value.copy(monthlyBudget = normalized)
+        _uiState.value = _uiState.value.copy(city = value, saved = false)
     }
 
     fun saveProfile() {
         viewModelScope.launch {
-            val budget = _uiState.value.monthlyBudget.toDoubleOrNull() ?: 0.0
             if (_uiState.value.name.isBlank() || _uiState.value.email.isBlank()) return@launch
             repository.saveUser(
                 User(
                     name = _uiState.value.name,
                     email = _uiState.value.email,
-                    city = _uiState.value.city,
-                    monthlyBudget = budget
+                    city = _uiState.value.city
                 )
             )
+            _uiState.value = _uiState.value.copy(saved = true)
         }
     }
 }

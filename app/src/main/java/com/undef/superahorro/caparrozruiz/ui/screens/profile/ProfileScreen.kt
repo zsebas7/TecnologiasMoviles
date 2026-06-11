@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,6 +54,13 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
                     label = stringResource(R.string.profile_city_label)
                 )
             }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Button(
+            onClick = viewModel::saveProfile,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = if (uiState.saved) stringResource(R.string.profile_saved_label) else stringResource(R.string.profile_save_button))
         }
     }
 }

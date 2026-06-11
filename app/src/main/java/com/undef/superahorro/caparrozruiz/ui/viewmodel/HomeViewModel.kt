@@ -20,15 +20,21 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             repository.ensureSeedData()
             repository.observePurchases().collectLatest { purchases ->
-                _uiState.value = _uiState.value.copy(purchases = purchases.take(5))
+                val currentMonth = java.time.LocalDate.now().format(
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM")
+                )
+                val monthlyTotal = purchases
+                    .filter { it.date.startsWith(currentMonth) }
+                    .sumOf { it.total }
+                _uiState.value = _uiState.value.copy(
+                    purchases = purchases.take(5),
+                    monthlyTotal = monthlyTotal
+                )
             }
         }
         viewModelScope.launch {
             repository.observeCurrentUser().collectLatest { user ->
-                _uiState.value = _uiState.value.copy(
-                    userName = user.name,
-                    monthlyBudget = user.monthlyBudget
-                )
+                _uiState.value = _uiState.value.copy(userName = user.name)
             }
         }
     }

@@ -91,7 +91,7 @@ fun HomeScreen(
                         Text(
                             text = stringResource(
                                 R.string.home_budget_value,
-                                "${stringResource(R.string.common_currency_symbol)} ${"%.2f".format(locale, uiState.monthlyBudget)}"
+                                "${stringResource(R.string.common_currency_symbol)} ${"%.2f".format(locale, uiState.monthlyTotal)}"
                             ),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onPrimary

@@ -29,7 +29,7 @@
     <string name="auth_recover_success">Te enviamos un correo de recuperación.</string>
 
     <string name="home_welcome">Hola, %1$s</string>
-    <string name="home_budget_title">Presupuesto mensual estimado</string>
+    <string name="home_budget_title">Gastado este mes</string>
     <string name="home_budget_value">%1$s</string>
     <string name="home_latest_purchases_title">Últimas compras</string>
     <string name="home_open_chat_button">Consultar</string>
@@ -40,6 +40,8 @@
     <string name="profile_name_label">Nombre</string>
     <string name="profile_email_label">Email</string>
     <string name="profile_city_label">Ciudad</string>
+    <string name="profile_save_button">Guardar cambios</string>
+    <string name="profile_saved_label">Guardado</string>
 
     <string name="settings_title">Configuración</string>
     <string name="settings_notifications">Notificaciones</string>

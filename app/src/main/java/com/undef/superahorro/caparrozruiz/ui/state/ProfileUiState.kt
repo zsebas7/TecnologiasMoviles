@@ -4,5 +4,5 @@ data class ProfileUiState(
     val name: String = "",
     val email: String = "",
     val city: String = "",
-    val monthlyBudget: String = ""
+    val saved: Boolean = false
 )

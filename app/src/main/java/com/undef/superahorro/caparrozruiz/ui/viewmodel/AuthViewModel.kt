@@ -57,8 +57,7 @@ class AuthViewModel : ViewModel() {
                     User(
                         name = _uiState.value.name,
                         email = _uiState.value.email,
-                        city = "",
-                        monthlyBudget = 265000.0
+                        city = ""
                     )
                 )
             }
