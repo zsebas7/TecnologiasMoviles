@@ -95,6 +95,9 @@
     <string name="purchase_new_ticket_gallery">Gallery</string>
     <string name="purchase_new_ticket_camera">Camera</string>
     <string name="purchase_new_ticket_attached">Receipt attached ✓</string>
+    <string name="purchase_new_ticket_analyze">Analyze receipt with AI</string>
+    <string name="purchase_new_ticket_analyzing">Analyzing receipt...</string>
+    <string name="purchase_new_ticket_ocr_error">Analysis error: %1$s</string>
 
     <string name="product_new_title">New product</string>
     <string name="product_new_name_label">Name</string>

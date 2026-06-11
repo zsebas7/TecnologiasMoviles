@@ -21,4 +21,12 @@ object RetrofitClient {
             .build()
             .create(SyncApiService::class.java)
     }
+
+    val ocrApiService: OcrApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://api.ocr.space/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(OcrApiService::class.java)
+    }
 }
