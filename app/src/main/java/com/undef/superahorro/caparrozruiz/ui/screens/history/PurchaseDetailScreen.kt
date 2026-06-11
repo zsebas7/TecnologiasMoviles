@@ -16,7 +16,6 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
+import com.undef.superahorro.caparrozruiz.ui.components.ConfirmDialog
 import com.undef.superahorro.caparrozruiz.ui.components.EditProductCard
 import com.undef.superahorro.caparrozruiz.ui.components.EditPurchaseCard
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.HistoryViewModel
+import com.undef.superahorro.caparrozruiz.util.toCurrencyString
 
 @Composable
 fun PurchaseDetailScreen(
@@ -110,7 +110,7 @@ fun PurchaseDetailScreen(
                                         expanded = false
                                         val shareText = buildString {
                                             appendLine("${purchase.market} - ${purchase.date} ${purchase.time}")
-                                            appendLine("Total: $currencySymbol ${"%.2f".format(locale, purchase.total)}")
+                                            appendLine("Total: $currencySymbol ${purchase.total.toCurrencyString(locale)}")
                                             if (products.isNotEmpty()) {
                                                 appendLine()
                                                 appendLine(productsTitle)
@@ -133,7 +133,7 @@ fun PurchaseDetailScreen(
                     Text(
                         text = stringResource(
                             R.string.purchase_detail_total,
-                            "${stringResource(R.string.common_currency_symbol)} ${"%.2f".format(locale, purchase.total)}"
+                            "${stringResource(R.string.common_currency_symbol)} ${purchase.total.toCurrencyString(locale)}"
                         ),
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -156,25 +156,14 @@ fun PurchaseDetailScreen(
             }
         }
         if (deletePurchaseId != null) {
-            AlertDialog(
-                onDismissRequest = { deletePurchaseId = null },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            deletePurchaseId?.let { viewModel.deletePurchase(it) }
-                            deletePurchaseId = null
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.common_confirm))
-                    }
+            ConfirmDialog(
+                title = stringResource(R.string.purchase_detail_delete_title),
+                message = stringResource(R.string.purchase_detail_delete_message),
+                onConfirm = {
+                    deletePurchaseId?.let { viewModel.deletePurchase(it) }
+                    deletePurchaseId = null
                 },
-                dismissButton = {
-                    TextButton(onClick = { deletePurchaseId = null }) {
-                        Text(text = stringResource(R.string.common_cancel))
-                    }
-                },
-                title = { Text(text = stringResource(R.string.purchase_detail_delete_title)) },
-                text = { Text(text = stringResource(R.string.purchase_detail_delete_message)) }
+                onDismiss = { deletePurchaseId = null }
             )
         }
         if (editingPurchase != null && editingPurchase.id == id) {
@@ -203,7 +192,7 @@ fun PurchaseDetailScreen(
                         Text(
                             text = stringResource(
                                 R.string.purchase_detail_price,
-                                "${stringResource(R.string.common_currency_symbol)} ${"%.2f".format(locale, product.price)}"
+                                "${stringResource(R.string.common_currency_symbol)} ${product.price.toCurrencyString(locale)}"
                             )
                         )
                     }
@@ -242,25 +231,14 @@ fun PurchaseDetailScreen(
     }
 
     if (deleteProductId != null) {
-        AlertDialog(
-            onDismissRequest = { deleteProductId = null },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        deleteProductId?.let { viewModel.deleteProduct(id, it) }
-                        deleteProductId = null
-                    }
-                ) {
-                    Text(text = stringResource(R.string.common_confirm))
-                }
+        ConfirmDialog(
+            title = stringResource(R.string.purchase_detail_delete_product_title),
+            message = stringResource(R.string.purchase_detail_delete_product_message),
+            onConfirm = {
+                deleteProductId?.let { viewModel.deleteProduct(id, it) }
+                deleteProductId = null
             },
-            dismissButton = {
-                TextButton(onClick = { deleteProductId = null }) {
-                    Text(text = stringResource(R.string.common_cancel))
-                }
-            },
-            title = { Text(text = stringResource(R.string.purchase_detail_delete_product_title)) },
-            text = { Text(text = stringResource(R.string.purchase_detail_delete_product_message)) }
+            onDismiss = { deleteProductId = null }
         )
     }
 }

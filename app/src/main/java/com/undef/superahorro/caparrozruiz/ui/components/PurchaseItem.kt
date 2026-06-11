@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
+import com.undef.superahorro.caparrozruiz.util.toCurrencyString
 
 @Composable
 fun PurchaseItem(
@@ -33,7 +34,7 @@ fun PurchaseItem(
                 Text(text = purchase.date, style = MaterialTheme.typography.bodySmall)
             }
             Text(
-                text = "$currencyLabel ${"%.2f".format(locale, purchase.total)}",
+                text = "$currencyLabel ${purchase.total.toCurrencyString(locale)}",
                 style = MaterialTheme.typography.titleMedium
             )
         }

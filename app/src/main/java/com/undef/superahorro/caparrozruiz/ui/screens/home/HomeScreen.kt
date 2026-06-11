@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.components.PurchaseItem
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.HomeViewModel
+import com.undef.superahorro.caparrozruiz.util.toCurrencyString
 
 @Composable
 fun HomeScreen(
@@ -91,7 +92,7 @@ fun HomeScreen(
                         Text(
                             text = stringResource(
                                 R.string.home_budget_value,
-                                "${stringResource(R.string.common_currency_symbol)} ${"%.2f".format(locale, uiState.monthlyTotal)}"
+                                "${stringResource(R.string.common_currency_symbol)} ${uiState.monthlyTotal.toCurrencyString(locale)}"
                             ),
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onPrimary

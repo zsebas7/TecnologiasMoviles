@@ -9,7 +9,7 @@ import com.undef.superahorro.caparrozruiz.ui.state.HistoryUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HistoryViewModel : ViewModel() {
@@ -19,14 +19,15 @@ class HistoryViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.observePurchases().collectLatest { purchases ->
-                _uiState.value = _uiState.value.copy(purchases = purchases)
-            }
-        }
-        viewModelScope.launch {
-            repository.observeProductsByPurchaseId().collectLatest { products ->
-                _uiState.value = _uiState.value.copy(productsByPurchaseId = products)
-            }
+            combine(
+                repository.observePurchases(),
+                repository.observeProductsByPurchaseId()
+            ) { purchases, products ->
+                _uiState.value = _uiState.value.copy(
+                    purchases = purchases,
+                    productsByPurchaseId = products
+                )
+            }.collect {}
         }
     }
 

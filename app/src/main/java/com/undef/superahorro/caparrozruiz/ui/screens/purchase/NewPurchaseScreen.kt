@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.components.AppTextField
+import com.undef.superahorro.caparrozruiz.ui.components.DraftProductItem
 import com.undef.superahorro.caparrozruiz.ui.components.PrimaryButton
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.NewPurchaseViewModel
 import java.io.File
@@ -182,19 +183,10 @@ fun NewPurchaseScreen(
         }
 
         uiState.products.forEach { product ->
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(text = product.name, style = MaterialTheme.typography.titleSmall)
-                    Text(text = product.description, style = MaterialTheme.typography.bodySmall)
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(text = stringResource(R.string.purchase_new_product_quantity, product.quantity))
-                        Text(text = stringResource(R.string.purchase_new_product_price, product.price))
-                    }
-                    Button(onClick = { viewModel.removeDraftProduct(product.id) }) {
-                        Text(text = stringResource(R.string.purchase_new_remove_product_button))
-                    }
-                }
-            }
+            DraftProductItem(
+                product = product,
+                onRemove = { viewModel.removeDraftProduct(product.id) }
+            )
         }
 
         uiState.saveError?.let { error ->
