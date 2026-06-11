@@ -13,5 +13,6 @@ data class NewPurchaseUiState(
     val ticketStatus: String = "",
     val ticketUri: String = "",
     val isAnalyzingTicket: Boolean = false,
-    val ocrError: String? = null
+    val ocrError: String? = null,
+    val saveError: String? = null
 )

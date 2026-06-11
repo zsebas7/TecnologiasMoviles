@@ -197,6 +197,14 @@ fun NewPurchaseScreen(
             }
         }
 
+        uiState.saveError?.let { error ->
+            Text(
+                text = error,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         PrimaryButton(
             text = stringResource(R.string.purchase_new_save_button),
             loading = uiState.isSaving,
