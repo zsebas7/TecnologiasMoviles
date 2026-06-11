@@ -11,5 +11,7 @@ data class NewPurchaseUiState(
     val products: List<Product> = emptyList(),
     val isSaving: Boolean = false,
     val ticketStatus: String = "",
-    val ticketUri: String = ""
+    val ticketUri: String = "",
+    val isAnalyzingTicket: Boolean = false,
+    val ocrError: String? = null
 )

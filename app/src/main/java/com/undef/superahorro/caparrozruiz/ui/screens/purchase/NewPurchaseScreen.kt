@@ -8,14 +8,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -141,6 +145,26 @@ fun NewPurchaseScreen(
                                 .height(160.dp),
                             contentScale = ContentScale.Crop
                         )
+                        OutlinedButton(
+                            onClick = viewModel::analyzeTicket,
+                            enabled = !uiState.isAnalyzingTicket,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if (uiState.isAnalyzingTicket) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = stringResource(R.string.purchase_new_ticket_analyzing))
+                            } else {
+                                Text(text = stringResource(R.string.purchase_new_ticket_analyze))
+                            }
+                        }
+                        uiState.ocrError?.let { error ->
+                            Text(
+                                text = stringResource(R.string.purchase_new_ticket_ocr_error, error),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             }

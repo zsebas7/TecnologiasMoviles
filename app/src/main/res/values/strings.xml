@@ -95,6 +95,9 @@
     <string name="purchase_new_ticket_gallery">Galería</string>
     <string name="purchase_new_ticket_camera">Cámara</string>
     <string name="purchase_new_ticket_attached">Ticket adjunto ✓</string>
+    <string name="purchase_new_ticket_analyze">Analizar ticket con IA</string>
+    <string name="purchase_new_ticket_analyzing">Analizando ticket...</string>
+    <string name="purchase_new_ticket_ocr_error">Error al analizar: %1$s</string>
 
     <string name="product_new_title">Nuevo producto</string>
     <string name="product_new_name_label">Nombre</string>
