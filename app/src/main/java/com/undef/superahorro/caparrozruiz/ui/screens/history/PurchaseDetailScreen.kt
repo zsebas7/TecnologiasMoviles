@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -135,6 +137,21 @@ fun PurchaseDetailScreen(
                         ),
                         style = MaterialTheme.typography.titleMedium
                     )
+                }
+            }
+            if (!purchase.ticketUri.isNullOrBlank()) {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(text = stringResource(R.string.purchase_detail_ticket_label), style = MaterialTheme.typography.titleSmall)
+                        AsyncImage(
+                            model = purchase.ticketUri,
+                            contentDescription = stringResource(R.string.purchase_detail_ticket_label),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
         }

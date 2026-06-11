@@ -78,6 +78,7 @@
     <string name="purchase_detail_product_code">Code: %1$s</string>
     <string name="purchase_detail_share_button">Share purchase</string>
     <string name="purchase_detail_share_chooser">Share purchase with</string>
+    <string name="purchase_detail_ticket_label">Purchase receipt</string>
 
     <string name="purchase_new_title">New purchase</string>
     <string name="purchase_new_date_label">Date (yyyy-mm-dd)</string>
@@ -93,7 +94,7 @@
     <string name="purchase_new_ticket_title">Purchase receipt</string>
     <string name="purchase_new_ticket_gallery">Gallery</string>
     <string name="purchase_new_ticket_camera">Camera</string>
-    <string name="purchase_new_ticket_status">Simulated attachment: %1$s</string>
+    <string name="purchase_new_ticket_attached">Receipt attached ✓</string>
 
     <string name="product_new_title">New product</string>
     <string name="product_new_name_label">Name</string>
@@ -127,7 +128,7 @@
     <string name="more_open_action">Open</string>
 
     <string name="promotions_title">Online promotions</string>
-    <string name="promotions_subtitle">Remote test data</string>
+    <string name="promotions_subtitle">Current deals and discounts</string>
     <string name="promotions_loading">Loading promotions...</string>
     <string name="promotions_empty">No promotions available.</string>
     <string name="promotions_error">Unable to load promotions.</string>

@@ -1,5 +1,8 @@
 package com.undef.superahorro.caparrozruiz.ui.screens.purchase
 
+import android.os.Environment
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,17 +22,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.undef.superahorro.caparrozruiz.R
 import com.undef.superahorro.caparrozruiz.ui.components.AppTextField
 import com.undef.superahorro.caparrozruiz.ui.components.PrimaryButton
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.NewPurchaseViewModel
-import android.content.Intent
-import androidx.compose.ui.platform.LocalContext
+import java.io.File
 
 @Composable
 fun NewPurchaseScreen(
@@ -39,6 +45,19 @@ fun NewPurchaseScreen(
 ) {
     val uiState by viewModel.purchaseState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { viewModel.setTicketUri(it.toString()) }
+    }
+
+    val pendingCameraUri = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<android.net.Uri?>(null) }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) pendingCameraUri.value?.let { viewModel.setTicketUri(it.toString()) }
+    }
 
     Column(
         modifier = Modifier
@@ -72,38 +91,43 @@ fun NewPurchaseScreen(
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(text = stringResource(R.string.purchase_new_ticket_title), style = MaterialTheme.typography.titleSmall)
-                    //Fila de botones para hacer las acciones relacionadas a los tickets
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
-                            onClick = {
-                                //Crea un intent para abrir la galeria
-                                val intent = Intent(Intent.ACTION_PICK).apply { type = "image/*" }
-                                //Lanza la actividad externa utilizando el contexto de la aplicación
-                                context.startActivity(intent)
-                                viewModel.setTicketStatus("Galería")
-                            }
+                            onClick = { galleryLauncher.launch("image/*") }
                         ) {
                             Text(text = stringResource(R.string.purchase_new_ticket_gallery))
                         }
                         OutlinedButton(
                             onClick = {
-                                //Crea un intent para abrir la camara
-                                val intent = Intent("android.media.action.IMAGE_CAPTURE")
-                                //Delega la tarea a la actividad externa
-                                context.startActivity(intent)
-                                viewModel.setTicketStatus("Cámara")
+                                runCatching {
+                                    val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                                    val file = File.createTempFile("ticket_", ".jpg", dir)
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        file
+                                    )
+                                    pendingCameraUri.value = uri
+                                    cameraLauncher.launch(uri)
+                                }
                             }
                         ) {
                             Text(text = stringResource(R.string.purchase_new_ticket_camera))
                         }
                     }
-                    if (uiState.ticketStatus.isNotBlank()) {
+                    if (uiState.ticketUri.isNotBlank()) {
                         Text(
-                            text = stringResource(
-                                R.string.purchase_new_ticket_status,
-                                uiState.ticketStatus
-                            ),
-                            style = MaterialTheme.typography.bodySmall
+                            text = stringResource(R.string.purchase_new_ticket_attached),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        AsyncImage(
+                            model = uiState.ticketUri,
+                            contentDescription = stringResource(R.string.purchase_new_ticket_title),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
