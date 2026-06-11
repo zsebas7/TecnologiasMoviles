@@ -18,7 +18,6 @@ class HomeViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.ensureSeedData()
             repository.observePurchases().collectLatest { purchases ->
                 val currentMonth = java.time.LocalDate.now().format(
                     java.time.format.DateTimeFormatter.ofPattern("yyyy-MM")

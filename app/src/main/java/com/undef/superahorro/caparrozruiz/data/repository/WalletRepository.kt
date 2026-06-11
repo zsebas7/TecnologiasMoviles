@@ -14,7 +14,6 @@ interface WalletRepository {
     fun observeNotificationsEnabled(): Flow<Boolean>
     fun observeMonthlySummaryEnabled(): Flow<Boolean>
 
-    suspend fun ensureSeedData()
     suspend fun addDraftProduct(product: Product)
     suspend fun removeDraftProduct(productId: Long)
     suspend fun clearDraftProducts()

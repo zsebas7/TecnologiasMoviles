@@ -11,7 +11,6 @@ import com.undef.superahorro.caparrozruiz.data.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DefaultWalletRepository(
@@ -21,7 +20,6 @@ class DefaultWalletRepository(
 ) : WalletRepository {
 
     private val draftProductsState = MutableStateFlow<List<Product>>(emptyList())
-    private val seededState = MutableStateFlow(false)
 
     override fun observePurchases(): Flow<List<Purchase>> =
         purchaseDao.observeAll().map { entities -> entities.map { it.toDomain() } }
@@ -42,38 +40,6 @@ class DefaultWalletRepository(
     override fun observeNotificationsEnabled(): Flow<Boolean> = preferences.notificationsEnabled
 
     override fun observeMonthlySummaryEnabled(): Flow<Boolean> = preferences.monthlySummaryEnabled
-
-    override suspend fun ensureSeedData() {
-        if (seededState.value) return
-        val existing = purchaseDao.observeAll().first()
-        if (existing.isNotEmpty()) {
-            seededState.value = true
-            return
-        }
-
-        val seedPurchases = listOf(
-            Purchase(market = "Carrefour", date = "2026-05-01", time = "10:15", total = 38650.0),
-            Purchase(market = "Disco", date = "2026-04-29", time = "18:40", total = 23400.0),
-            Purchase(market = "Coto", date = "2026-04-27", time = "12:10", total = 41200.0),
-            Purchase(market = "Dia", date = "2026-04-24", time = "20:05", total = 15780.0)
-        )
-
-        val purchaseIds = seedPurchases.map { purchase ->
-            purchaseDao.insert(purchase.toEntity())
-        }
-
-        productDao.insertAll(
-            listOf(
-                ProductEntity(purchaseId = purchaseIds[0], code = "779123", name = "Arroz largo", description = "Bolsa 1kg", quantity = 2, price = 1800.0),
-                ProductEntity(purchaseId = purchaseIds[0], code = "779456", name = "Aceite", description = "Girasol 900ml", quantity = 1, price = 3200.0),
-                ProductEntity(purchaseId = purchaseIds[1], code = "779111", name = "Leche", description = "Entera 1L", quantity = 4, price = 1100.0),
-                ProductEntity(purchaseId = purchaseIds[2], code = "779333", name = "Fideos", description = "Spaghetti 500g", quantity = 2, price = 1250.0),
-                ProductEntity(purchaseId = purchaseIds[2], code = "779555", name = "Queso", description = "Cremoso 300g", quantity = 1, price = 3600.0)
-            )
-        )
-
-        seededState.value = true
-    }
 
     override suspend fun addDraftProduct(product: Product) {
         draftProductsState.value = draftProductsState.value + product
