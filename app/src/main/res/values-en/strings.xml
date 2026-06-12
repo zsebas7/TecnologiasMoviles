@@ -47,10 +47,13 @@
     <string name="settings_email_button">Send support email</string>
     <string name="settings_email_chooser">Send inquiry with</string>
     <string name="settings_email_subject">Inquiry from Super Ahorro</string>
+    <string name="settings_sync_button">Sync purchases</string>
+    <string name="settings_syncing_button">Syncing...</string>
     <string name="settings_logout_button">Log out</string>
 
     <string name="history_title">Purchase history</string>
     <string name="history_subtitle">Ordered by date</string>
+    <string name="history_search_placeholder">Search by market</string>
     <string name="history_edit_button">Edit</string>
     <string name="history_delete_button">Delete</string>
     <string name="history_confirm_delete_title">Delete purchase</string>
@@ -73,6 +76,9 @@
     <string name="purchase_detail_delete_title">Delete purchase</string>
     <string name="purchase_detail_delete_message">Confirm delete this purchase?</string>
     <string name="purchase_detail_product_code">Code: %1$s</string>
+    <string name="purchase_detail_share_button">Share purchase</string>
+    <string name="purchase_detail_share_chooser">Share purchase with</string>
+    <string name="purchase_detail_ticket_label">Purchase receipt</string>
 
     <string name="purchase_new_title">New purchase</string>
     <string name="purchase_new_date_label">Date (yyyy-mm-dd)</string>
@@ -88,7 +94,10 @@
     <string name="purchase_new_ticket_title">Purchase receipt</string>
     <string name="purchase_new_ticket_gallery">Gallery</string>
     <string name="purchase_new_ticket_camera">Camera</string>
-    <string name="purchase_new_ticket_status">Simulated attachment: %1$s</string>
+    <string name="purchase_new_ticket_attached">Receipt attached ✓</string>
+    <string name="purchase_new_ticket_analyze">Analyze receipt with AI</string>
+    <string name="purchase_new_ticket_analyzing">Analyzing receipt...</string>
+    <string name="purchase_new_ticket_ocr_error">Analysis error: %1$s</string>
 
     <string name="product_new_title">New product</string>
     <string name="product_new_name_label">Name</string>
@@ -117,7 +126,17 @@
     <string name="more_profile_subtitle">Update your details</string>
     <string name="more_settings_title">Settings</string>
     <string name="more_settings_subtitle">Notifications and access</string>
+    <string name="more_promotions_title">Online promotions</string>
+    <string name="more_promotions_subtitle">View remote offers</string>
     <string name="more_open_action">Open</string>
+
+    <string name="promotions_title">Online promotions</string>
+    <string name="promotions_subtitle">Current deals and discounts</string>
+    <string name="promotions_loading">Loading promotions...</string>
+    <string name="promotions_empty">No promotions available.</string>
+    <string name="promotions_error">Unable to load promotions.</string>
+    <string name="promotions_retry">Retry</string>
+    <string name="promotions_refresh">Refresh</string>
 
     <string name="common_cancel">Cancel</string>
     <string name="common_confirm">Confirm</string>

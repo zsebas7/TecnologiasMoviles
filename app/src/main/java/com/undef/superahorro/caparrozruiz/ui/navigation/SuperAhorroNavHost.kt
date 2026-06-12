@@ -7,13 +7,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.undef.superahorro.caparrozruiz.ui.viewmodel.AuthViewModel
 import com.undef.superahorro.caparrozruiz.ui.screens.auth.ForgotPasswordScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.auth.LoginScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.auth.RegisterScreen
@@ -28,6 +32,7 @@ import com.undef.superahorro.caparrozruiz.ui.screens.settings.SettingsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.splash.SplashScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.stats.StatsScreen
 import com.undef.superahorro.caparrozruiz.ui.screens.more.MoreScreen
+import com.undef.superahorro.caparrozruiz.ui.screens.promotions.PromotionsScreen
 
 @Composable
 fun SuperAhorroNavHost() {
@@ -67,10 +72,12 @@ fun SuperAhorroNavHost() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(AppRoute.Splash) {
+                val authVm: AuthViewModel = viewModel()
+                val authState by authVm.uiState.collectAsState()
                 SplashScreen(
                     onSplashFinished = {
-                        //Redirige a LoginScreen y elimina el SplashScreen de la pila
-                        navController.navigate(AppRoute.Login) {
+                        val dest = if (authState.isLoggedIn) AppRoute.Home else AppRoute.Login
+                        navController.navigate(dest) {
                             popUpTo(AppRoute.Splash) { inclusive = true }
                         }
                     }
@@ -147,8 +154,12 @@ fun SuperAhorroNavHost() {
             composable(AppRoute.More) {
                 MoreScreen(
                     onOpenProfile = { navController.navigate(AppRoute.Profile) },
-                    onOpenSettings = { navController.navigate(AppRoute.Settings) }
+                    onOpenSettings = { navController.navigate(AppRoute.Settings) },
+                    onOpenPromotions = { navController.navigate(AppRoute.Promotions) }
                 )
+            }
+            composable(AppRoute.Promotions) {
+                PromotionsScreen()
             }
             composable(AppRoute.Stats) {
                 StatsScreen()

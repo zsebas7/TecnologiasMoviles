@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.undef.superahorro.caparrozruiz.R
-import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsMode
+import com.undef.superahorro.caparrozruiz.ui.state.StatsMode
 import com.undef.superahorro.caparrozruiz.ui.viewmodel.StatsViewModel
 import androidx.compose.foundation.Canvas
 
@@ -51,19 +51,12 @@ fun StatsScreen(viewModel: StatsViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (uiState.mode == StatsMode.Daily) {
-                Button(onClick = { viewModel.setMode(StatsMode.Daily) }, modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(R.string.stats_mode_daily))
-                }
-                OutlinedButton(onClick = { viewModel.setMode(StatsMode.Monthly) }, modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(R.string.stats_mode_monthly))
-                }
-            } else {
-                OutlinedButton(onClick = { viewModel.setMode(StatsMode.Daily) }, modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(R.string.stats_mode_daily))
-                }
-                Button(onClick = { viewModel.setMode(StatsMode.Monthly) }, modifier = Modifier.weight(1f)) {
-                    Text(text = stringResource(R.string.stats_mode_monthly))
+            listOf(StatsMode.Daily to stringResource(R.string.stats_mode_daily),
+                   StatsMode.Monthly to stringResource(R.string.stats_mode_monthly)).forEach { (mode, label) ->
+                if (uiState.mode == mode) {
+                    Button(onClick = {}, modifier = Modifier.weight(1f)) { Text(label) }
+                } else {
+                    OutlinedButton(onClick = { viewModel.setMode(mode) }, modifier = Modifier.weight(1f)) { Text(label) }
                 }
             }
         }

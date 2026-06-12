@@ -2,9 +2,11 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.undef.superahorro.caparrozruiz.core.AppContainer
 import com.undef.superahorro.caparrozruiz.data.model.Product
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
-import com.undef.superahorro.caparrozruiz.data.repository.FakeWalletRepository
+import com.undef.superahorro.caparrozruiz.ui.state.NewProductUiState
+import com.undef.superahorro.caparrozruiz.ui.state.NewPurchaseUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,26 +16,8 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-data class NewPurchaseUiState(
-    val date: String = "",
-    val time: String = "",
-    val market: String = "",
-    val total: String = "",
-    val computedTotal: Double = 0.0,
-    val products: List<Product> = emptyList(),
-    val isSaving: Boolean = false,
-    val ticketStatus: String = ""
-)
-
-data class NewProductUiState(
-    val name: String = "",
-    val description: String = "",
-    val quantity: String = "",
-    val price: String = ""
-)
-
 class NewPurchaseViewModel : ViewModel() {
-    private val repository = FakeWalletRepository
+    private val repository = AppContainer.walletRepository
 
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
@@ -51,7 +35,7 @@ class NewPurchaseViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            repository.draftProductsFlow().collectLatest { products ->
+            repository.observeDraftProducts().collectLatest { products ->
                 val computedTotal = products.sumOf { it.price * it.quantity }
                 _purchaseState.value = _purchaseState.value.copy(
                     products = products,
@@ -70,7 +54,7 @@ class NewPurchaseViewModel : ViewModel() {
     }
 
     fun onMarketChanged(value: String) {
-        _purchaseState.value = _purchaseState.value.copy(market = value)
+        _purchaseState.value = _purchaseState.value.copy(market = value, saveError = null)
     }
 
     fun onTotalChanged(value: String) {
@@ -80,7 +64,7 @@ class NewPurchaseViewModel : ViewModel() {
         } else {
             filtered
         }
-        _purchaseState.value = _purchaseState.value.copy(total = normalized)
+        _purchaseState.value = _purchaseState.value.copy(total = normalized, saveError = null)
     }
 
     fun onProductNameChanged(value: String) {
@@ -99,8 +83,8 @@ class NewPurchaseViewModel : ViewModel() {
         _productState.value = _productState.value.copy(price = value)
     }
 
-    fun setTicketStatus(value: String) {
-        _purchaseState.value = _purchaseState.value.copy(ticketStatus = value)
+    fun setTicketUri(uri: String) {
+        _purchaseState.value = _purchaseState.value.copy(ticketUri = uri, ticketStatus = "attached")
     }
 
     fun addProduct(onAdded: () -> Unit) {
@@ -108,47 +92,88 @@ class NewPurchaseViewModel : ViewModel() {
         val price = _productState.value.price.toDoubleOrNull() ?: 0.0
         if (_productState.value.name.isBlank() || quantity <= 0 || price <= 0.0) return
         val product = Product(
-            id = "DRAFT-${System.currentTimeMillis()}",
+            id = System.currentTimeMillis(),
             code = "",
             name = _productState.value.name,
             description = _productState.value.description,
             quantity = quantity,
             price = price
         )
-        repository.addDraftProduct(product)
-        val computedTotal = repository.draftProductsFlow().value.sumOf { it.price * it.quantity }
-        _purchaseState.value = _purchaseState.value.copy(
-            total = "%.2f".format(computedTotal),
-            computedTotal = computedTotal
-        )
-        _productState.value = NewProductUiState()
-        onAdded()
+        viewModelScope.launch {
+            repository.addDraftProduct(product)
+            val computedTotal = _purchaseState.value.products.sumOf { it.price * it.quantity }
+            _purchaseState.value = _purchaseState.value.copy(
+                total = "%.2f".format(computedTotal),
+                computedTotal = computedTotal
+            )
+            _productState.value = NewProductUiState()
+            onAdded()
+        }
     }
 
-    fun removeDraftProduct(productId: String) {
-        repository.removeDraftProduct(productId)
-        val computedTotal = repository.draftProductsFlow().value.sumOf { it.price * it.quantity }
-        _purchaseState.value = _purchaseState.value.copy(
-            total = if (computedTotal > 0.0) "%.2f".format(computedTotal) else "",
-            computedTotal = computedTotal
-        )
+    fun removeDraftProduct(productId: Long) {
+        viewModelScope.launch {
+            repository.removeDraftProduct(productId)
+            val computedTotal = _purchaseState.value.products.sumOf { it.price * it.quantity }
+            _purchaseState.value = _purchaseState.value.copy(
+                total = if (computedTotal > 0.0) "%.2f".format(computedTotal) else "",
+                computedTotal = computedTotal
+            )
+        }
+    }
+
+    fun analyzeTicket() {
+        val uri = _purchaseState.value.ticketUri
+        if (uri.isBlank()) return
+        viewModelScope.launch {
+            _purchaseState.value = _purchaseState.value.copy(isAnalyzingTicket = true, ocrError = null)
+            runCatching { AppContainer.ocrRepository.analyzeTicket(uri) }
+                .onSuccess { ticket ->
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isAnalyzingTicket = false,
+                        market = ticket.market.ifBlank { _purchaseState.value.market },
+                        date = ticket.date.ifBlank { _purchaseState.value.date },
+                        time = ticket.time.ifBlank { _purchaseState.value.time },
+                        total = ticket.total.ifBlank { _purchaseState.value.total }
+                    )
+                }
+                .onFailure { error ->
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isAnalyzingTicket = false,
+                        ocrError = error.message ?: "Error desconocido"
+                    )
+                }
+        }
     }
 
     fun savePurchase(onSaved: () -> Unit) {
         viewModelScope.launch {
-            _purchaseState.value = _purchaseState.value.copy(isSaving = true)
+            _purchaseState.value = _purchaseState.value.copy(isSaving = true, saveError = null)
             val totalValue = _purchaseState.value.total.toDoubleOrNull()
                 ?: _purchaseState.value.computedTotal
-            if (_purchaseState.value.market.isBlank() || totalValue <= 0.0) {
-                _purchaseState.value = _purchaseState.value.copy(isSaving = false)
-                return@launch
+            when {
+                _purchaseState.value.market.isBlank() -> {
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isSaving = false,
+                        saveError = "Completá el nombre del comercio"
+                    )
+                    return@launch
+                }
+                totalValue <= 0.0 -> {
+                    _purchaseState.value = _purchaseState.value.copy(
+                        isSaving = false,
+                        saveError = "El total debe ser mayor a cero"
+                    )
+                    return@launch
+                }
             }
             val purchase = Purchase(
-                id = "P-${System.currentTimeMillis()}",
+                id = 0,
                 market = _purchaseState.value.market,
                 date = _purchaseState.value.date,
                 time = _purchaseState.value.time,
-                total = totalValue
+                total = totalValue,
+                ticketUri = _purchaseState.value.ticketUri
             )
             repository.addPurchase(purchase, _purchaseState.value.products)
             _purchaseState.value = NewPurchaseUiState(

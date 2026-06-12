@@ -29,7 +29,7 @@
     <string name="auth_recover_success">Te enviamos un correo de recuperación.</string>
 
     <string name="home_welcome">Hola, %1$s</string>
-    <string name="home_budget_title">Presupuesto mensual estimado</string>
+    <string name="home_budget_title">Gastado este mes</string>
     <string name="home_budget_value">%1$s</string>
     <string name="home_latest_purchases_title">Últimas compras</string>
     <string name="home_open_chat_button">Consultar</string>
@@ -40,6 +40,8 @@
     <string name="profile_name_label">Nombre</string>
     <string name="profile_email_label">Email</string>
     <string name="profile_city_label">Ciudad</string>
+    <string name="profile_save_button">Guardar cambios</string>
+    <string name="profile_saved_label">Guardado</string>
 
     <string name="settings_title">Configuración</string>
     <string name="settings_notifications">Notificaciones</string>
@@ -47,10 +49,13 @@
     <string name="settings_email_button">Enviar consulta por email</string>
     <string name="settings_email_chooser">Enviar consulta con</string>
     <string name="settings_email_subject">Consulta desde Super Ahorro</string>
+    <string name="settings_sync_button">Sincronizar compras</string>
+    <string name="settings_syncing_button">Sincronizando...</string>
     <string name="settings_logout_button">Cerrar sesión</string>
 
     <string name="history_title">Historial de compras</string>
     <string name="history_subtitle">Ordenadas por fecha</string>
+    <string name="history_search_placeholder">Buscar por supermercado</string>
     <string name="history_edit_button">Editar</string>
     <string name="history_delete_button">Eliminar</string>
     <string name="history_confirm_delete_title">Eliminar compra</string>
@@ -73,6 +78,9 @@
     <string name="purchase_detail_delete_title">Eliminar compra</string>
     <string name="purchase_detail_delete_message">¿Confirmas eliminar esta compra?</string>
     <string name="purchase_detail_product_code">Código: %1$s</string>
+    <string name="purchase_detail_share_button">Compartir compra</string>
+    <string name="purchase_detail_share_chooser">Compartir compra con</string>
+    <string name="purchase_detail_ticket_label">Ticket de compra</string>
 
     <string name="purchase_new_title">Nueva compra</string>
     <string name="purchase_new_date_label">Fecha (aaaa-mm-dd)</string>
@@ -88,7 +96,10 @@
     <string name="purchase_new_ticket_title">Ticket de compra</string>
     <string name="purchase_new_ticket_gallery">Galería</string>
     <string name="purchase_new_ticket_camera">Cámara</string>
-    <string name="purchase_new_ticket_status">Adjunto simulado: %1$s</string>
+    <string name="purchase_new_ticket_attached">Ticket adjunto ✓</string>
+    <string name="purchase_new_ticket_analyze">Analizar ticket con IA</string>
+    <string name="purchase_new_ticket_analyzing">Analizando ticket...</string>
+    <string name="purchase_new_ticket_ocr_error">Error al analizar: %1$s</string>
 
     <string name="product_new_title">Nuevo producto</string>
     <string name="product_new_name_label">Nombre</string>
@@ -117,7 +128,17 @@
     <string name="more_profile_subtitle">Actualiza tus datos</string>
     <string name="more_settings_title">Configuración</string>
     <string name="more_settings_subtitle">Notificaciones y accesos</string>
+    <string name="more_promotions_title">Promociones online</string>
+    <string name="more_promotions_subtitle">Ver ofertas remotas</string>
     <string name="more_open_action">Abrir</string>
+
+    <string name="promotions_title">Promociones online</string>
+    <string name="promotions_subtitle">Ofertas y descuentos del momento</string>
+    <string name="promotions_loading">Cargando promociones...</string>
+    <string name="promotions_empty">No hay promociones disponibles.</string>
+    <string name="promotions_error">No se pudieron cargar las promociones.</string>
+    <string name="promotions_retry">Reintentar</string>
+    <string name="promotions_refresh">Actualizar</string>
 
     <string name="common_cancel">Cancelar</string>
     <string name="common_confirm">Confirmar</string>

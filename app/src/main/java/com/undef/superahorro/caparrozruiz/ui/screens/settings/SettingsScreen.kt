@@ -82,6 +82,19 @@ fun SettingsScreen(
             Text(text = stringResource(R.string.settings_email_button))
         }
         Button(
+            onClick = viewModel::syncPurchases,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isSyncing
+        ) {
+            Text(text = if (uiState.isSyncing) stringResource(R.string.settings_syncing_button) else stringResource(R.string.settings_sync_button))
+        }
+        if (uiState.syncMessage.isNotBlank()) {
+            Text(text = uiState.syncMessage, style = MaterialTheme.typography.bodySmall)
+        }
+        if (uiState.syncError.isNotBlank()) {
+            Text(text = uiState.syncError, style = MaterialTheme.typography.bodySmall)
+        }
+        Button(
             onClick = onLogoutClick,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()

@@ -9,6 +9,7 @@ object AppRoute {
     const val Profile = "main/profile"
     const val Settings = "main/settings"
     const val More = "main/more"
+    const val Promotions = "main/promotions"
     const val Chat = "main/chat"
     const val Stats = "main/stats"
     const val History = "main/history"

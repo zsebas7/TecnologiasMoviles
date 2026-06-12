@@ -1,7 +1,7 @@
 package com.undef.superahorro.caparrozruiz.data.model
 
 data class Product(
-    val id: String,
+    val id: Long = 0,
     val code: String,
     val name: String,
     val description: String,
