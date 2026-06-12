@@ -57,6 +57,7 @@ fun NewPurchaseScreen(
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
+        //cuando el usuario selecciona una imagen, la galeria devuelve un uri
     ) { uri ->
         uri?.let { viewModel.setTicketUri(it.toString()) }
     }
@@ -76,13 +77,14 @@ fun NewPurchaseScreen(
     }
 
     val launchCamera = {
+        //con la camara es distinto que con la galeria porque el archivo todavia no existe, por lo que no hay una uri que guardar
         runCatching {
             val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            val file = File.createTempFile("ticket_", ".jpg", dir)
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+            val file = File.createTempFile("ticket_", ".jpg", dir)//crea el archivo vacio
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)//genera una uri para ese archivo
             pendingCameraUri.value = uri
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                cameraLauncher.launch(uri)
+                cameraLauncher.launch(uri)// la camara escribe al foto en ese archivo
             } else {
                 cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
@@ -125,7 +127,7 @@ fun NewPurchaseScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(text = stringResource(R.string.purchase_new_ticket_title), style = MaterialTheme.typography.titleSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = { galleryLauncher.launch("image/*") }) {
+                        OutlinedButton(onClick = { galleryLauncher.launch("image/*") }) {//lanza un intent para abrir la galeria del sistema
                             Text(text = stringResource(R.string.purchase_new_ticket_gallery))
                         }
                         OutlinedButton(onClick = { launchCamera() }) {
@@ -139,7 +141,7 @@ fun NewPurchaseScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                         AsyncImage(
-                            model = uiState.ticketUri,
+                            model = uiState.ticketUri, //muestra la imagen con el uri guardado
                             contentDescription = stringResource(R.string.purchase_new_ticket_title),
                             modifier = Modifier
                                 .fillMaxWidth()

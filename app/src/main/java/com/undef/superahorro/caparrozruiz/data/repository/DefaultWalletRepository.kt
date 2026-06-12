@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
+//Intermediario entre los viewModel y las fuentes de datos.
+//Los viewmodel hablan con DefaultWalletRepository en vez de con los DAOs o con UserPreferencesDataSource
 class DefaultWalletRepository(
     private val purchaseDao: PurchaseDao,
     private val productDao: ProductDao,
@@ -20,7 +22,8 @@ class DefaultWalletRepository(
 ) : WalletRepository {
 
     private val draftProductsState = MutableStateFlow<List<Product>>(emptyList())
-
+    //Leer Room y convertir:
+    //Rom devuelve List<PurchaseEntity> y .map los convierte a List<Purchase>
     override fun observePurchases(): Flow<List<Purchase>> =
         purchaseDao.observeAll().map { entities -> entities.map { it.toDomain() } }
 
@@ -31,14 +34,11 @@ class DefaultWalletRepository(
             }
         }
 
-    override fun observeDraftProducts(): Flow<List<Product>> = draftProductsState
-
+    //expone los Flows de UserPreferencesDataSource para que el viewModel lo vea
     override fun observeCurrentUser(): Flow<User> = preferences.currentUser
-
+    override fun observeDraftProducts(): Flow<List<Product>> = draftProductsState
     override fun observeIsLoggedIn(): Flow<Boolean> = preferences.isLoggedIn
-
     override fun observeNotificationsEnabled(): Flow<Boolean> = preferences.notificationsEnabled
-
     override fun observeMonthlySummaryEnabled(): Flow<Boolean> = preferences.monthlySummaryEnabled
 
     override suspend fun addDraftProduct(product: Product) {
@@ -53,6 +53,8 @@ class DefaultWalletRepository(
         draftProductsState.value = emptyList()
     }
 
+    //insterta la compra primero para obtener el id generado por Room,
+    //despues vincula los productos a ese ID
     override suspend fun addPurchase(purchase: Purchase, products: List<Product>) {
         val purchaseId = purchaseDao.insert(purchase.toEntity())
         if (products.isNotEmpty()) {

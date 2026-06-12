@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 private val Context.userPreferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
-
+//Maneja la persistencia del usuario usando DataStore
+//Crea un archivo .pb con los datos del usuario, estos datos se borran si el usuario borra la aplicacion
 class UserPreferencesDataSource(private val context: Context) {
 
     private object Keys {
@@ -27,10 +28,15 @@ class UserPreferencesDataSource(private val context: Context) {
         val MONTHLY_SUMMARY_ENABLED = booleanPreferencesKey("monthly_summary_enabled")
     }
 
+
+    //.data devuelve un Flow, por lo que cada vez que se cambia el valor, Flow lo emite y el viewModel lo
+    //observa con collectLatest para actualizar la UI
     val isLoggedIn: Flow<Boolean> = context.userPreferencesDataStore.data
         .catchPreferencesErrors()
+        //devuelve false si nunca se guardó el estado de login
         .map { preferences -> preferences[Keys.IS_LOGGED_IN] ?: false }
 
+    //hace lo mismo pero con otros datos del usuario
     val currentUser: Flow<User> = context.userPreferencesDataStore.data
         .catchPreferencesErrors()
         .map { preferences ->
@@ -49,6 +55,7 @@ class UserPreferencesDataSource(private val context: Context) {
         .catchPreferencesErrors()
         .map { preferences -> preferences[Keys.MONTHLY_SUMMARY_ENABLED] ?: true }
 
+    //suspend para que solo pueda ser llamado desde una corrutina (para no bloquear el hilo principal)
     suspend fun setLoggedIn(loggedIn: Boolean) {
         context.userPreferencesDataStore.edit { preferences ->
             preferences[Keys.IS_LOGGED_IN] = loggedIn

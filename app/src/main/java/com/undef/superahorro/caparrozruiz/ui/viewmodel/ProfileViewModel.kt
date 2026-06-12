@@ -42,9 +42,9 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun saveProfile() {
-        viewModelScope.launch {
+        viewModelScope.launch { //abre una corrutina
             if (_uiState.value.name.isBlank() || _uiState.value.email.isBlank()) return@launch
-            repository.saveUser(
+            repository.saveUser( //lama al repository
                 User(
                     name = _uiState.value.name,
                     email = _uiState.value.email,

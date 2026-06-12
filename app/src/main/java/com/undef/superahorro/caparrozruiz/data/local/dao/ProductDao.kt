@@ -9,13 +9,16 @@ import com.undef.superahorro.caparrozruiz.data.local.entity.ProductEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+//los DAOs solo declaran que operaciones existen, sin escribir como funcionan (excpeto Querys mas complejos)
 interface ProductDao {
+    //como las dos primeras son consultas personalizadas las tenemos que escribir nosotros
     @Query("SELECT * FROM products WHERE purchase_id = :purchaseId ORDER BY id ASC")
     fun observeByPurchaseId(purchaseId: Long): Flow<List<ProductEntity>>
 
     @Query("SELECT * FROM products ORDER BY id ASC")
     fun observeAll(): Flow<List<ProductEntity>>
 
+    //el resto las genera Room automaticamente
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: ProductEntity): Long
 

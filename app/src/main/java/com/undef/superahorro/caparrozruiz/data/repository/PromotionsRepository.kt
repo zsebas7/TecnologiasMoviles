@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class PromotionsRepository(
+    //implementa el patron offline-first, es decir, usa Room como caché para guardar los datos y poder mostrarlos
+    //si se pierde la conexion a internet
     private val apiService: PromotionApiService,
     private val promotionDao: PromotionDao
 ) {
+    //devuelve un Flow de Room, la UI se suscribe a esto y muestra lo que hay en caché local
     fun observePromotions(): Flow<List<Promotion>> =
         promotionDao.getAll().map { entities ->
             entities.map { it.toDomain() }
@@ -21,10 +24,10 @@ class PromotionsRepository(
 
     suspend fun refreshPromotions(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            val response = apiService.getPromotions()
-            val entities = response.products.map { it.toDomain().toEntity() }
-            promotionDao.deleteAll()
-            promotionDao.insertAll(entities)
+            val response = apiService.getPromotions() //llama a la API
+            val entities = response.products.map { it.toDomain().toEntity() }//convierte DTO a Entity
+            promotionDao.deleteAll() //limpia caché vieja
+            promotionDao.insertAll(entities) //guarda los datos nuevos
         }
     }
 

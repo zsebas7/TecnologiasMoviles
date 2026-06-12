@@ -4,15 +4,17 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-
+//crea y configura las conexiones hacia las APIs
 object RetrofitClient {
     private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
 
+    //by lazy para que la instancia se cree cuando el usuario lo use por primera vez, no cuando arranca la app
     val promotionApiService: PromotionApiService by lazy {
         Retrofit.Builder()
             .baseUrl("https://dummyjson.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())//convierte el JSON a objetos Kotlin
             .build()
+            //retrofit lee la interfaz y genera la implementacion real que hace las llamadas HTTP
             .create(PromotionApiService::class.java)
     }
 
@@ -34,6 +36,7 @@ object RetrofitClient {
 
     val geminiApiService: GeminiApiService by lazy {
         val client = OkHttpClient.Builder()
+            //le pusimos timeout largo porque tardaba mucho en pensar las respuestas
             .connectTimeout(120, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)

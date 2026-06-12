@@ -13,21 +13,23 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class PromotionsViewModel : ViewModel() {
+    //le pasa al reposiroty el cliente HTTP y el DAO de Room
     private val repository = PromotionsRepository(
-        RetrofitClient.promotionApiService,
-        AppContainer.database.promotionDao()
+        RetrofitClient.promotionApiService, //Retrofit provee conexion
+        AppContainer.database.promotionDao() //Appcontainter provee base de datos
     )
 
     private val _uiState = MutableStateFlow(PromotionsUiState(isLoading = true))
     val uiState: StateFlow<PromotionsUiState> = _uiState.asStateFlow()
 
     init {
-        observeCachedPromotions()
-        refreshFromNetwork()
+        observeCachedPromotions() //se suscribe al Flow de Room y muestra lo que hay guardado
+        refreshFromNetwork() //va a buscar datos nuevos a la API
     }
 
     private fun observeCachedPromotions() {
         viewModelScope.launch {
+            //se suscribe al flow con collectLatest para que cada vez que Room tenga datos nuevos la UI se actualice
             repository.observePromotions().collectLatest { promotions ->
                 _uiState.value = _uiState.value.copy(
                     promotions = promotions,

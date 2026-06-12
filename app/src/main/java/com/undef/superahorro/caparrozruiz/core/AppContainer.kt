@@ -8,6 +8,7 @@ import com.undef.superahorro.caparrozruiz.data.repository.DefaultWalletRepositor
 import com.undef.superahorro.caparrozruiz.data.repository.OcrRepository
 import com.undef.superahorro.caparrozruiz.data.repository.WalletRepository
 
+//existe para que cada viewmodel no cree multiples instancias de las bases de datos ni hagan multiples conexiones al mismo lugar
 object AppContainer {
     lateinit var walletRepository: WalletRepository
         private set
@@ -20,10 +21,10 @@ object AppContainer {
 
     fun initialize(context: Context) {
         val appContext = context.applicationContext
-        database = AppDatabase.getDatabase(appContext)
-        val preferences = UserPreferencesDataSource(appContext)
-        walletRepository = DefaultWalletRepository(
-            purchaseDao = database.purchaseDao(),
+        database = AppDatabase.getDatabase(appContext)//base de datos
+        val preferences = UserPreferencesDataSource(appContext)//data store
+        walletRepository = DefaultWalletRepository(//repository
+            purchaseDao = database.purchaseDao(),//el repository necesita de la BD y de DataStore ya inicializados
             productDao = database.productDao(),
             preferences = preferences
         )
