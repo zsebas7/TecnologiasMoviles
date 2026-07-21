@@ -3,7 +3,8 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.undef.superahorro.caparrozruiz.core.AppContainer
-import com.undef.superahorro.caparrozruiz.data.remote.RetrofitClient
+import com.undef.superahorro.caparrozruiz.data.dto.SyncProductDto
+import com.undef.superahorro.caparrozruiz.data.dto.SyncPurchaseItemDto
 import com.undef.superahorro.caparrozruiz.data.repository.SyncRepository
 import com.undef.superahorro.caparrozruiz.ui.state.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel : ViewModel() {
     private val repository = AppContainer.walletRepository
-    private val syncRepository = SyncRepository(RetrofitClient.syncApiService)
+    private val syncRepository = SyncRepository()
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -50,15 +51,24 @@ class SettingsViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(isSyncing = true, syncError = "", syncMessage = "")
             runCatching {
                 val purchases = repository.observePurchases().first()
-                val body = buildString {
-                    append("Purchases: ")
-                    append(purchases.size)
+                val productsByPurchase = repository.observeProductsByPurchaseId().first()
+                val syncItems = purchases.map { purchase ->
+                    SyncPurchaseItemDto(
+                        id = purchase.id,
+                        market = purchase.market,
+                        date = purchase.date,
+                        time = purchase.time,
+                        total = purchase.total,
+                        products = productsByPurchase[purchase.id]?.map { product ->
+                            SyncProductDto(
+                                name = product.name,
+                                quantity = product.quantity,
+                                price = product.price
+                            )
+                        } ?: emptyList()
+                    )
                 }
-                syncRepository.syncPurchases(
-                    title = "SuperAhorro sync",
-                    body = body,
-                    userId = 1
-                )
+                syncRepository.syncPurchases(purchases = syncItems)
             }.onSuccess { message ->
                 _uiState.value = _uiState.value.copy(isSyncing = false, syncMessage = message)
             }.onFailure { throwable ->
