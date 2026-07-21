@@ -46,6 +46,10 @@ fun ForgotPasswordScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = stringResource(R.string.auth_recover_success), style = MaterialTheme.typography.bodyMedium)
             }
+            uiState.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
             TextButton(onClick = onBackToLogin) {
                 Text(text = stringResource(R.string.auth_back_to_login_action))
             }

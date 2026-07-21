@@ -79,6 +79,11 @@ class DefaultWalletRepository(
         productDao.deleteById(productId)
     }
 
+    override suspend fun clearAllPurchases() {
+        productDao.deleteAll()
+        purchaseDao.deleteAll()
+    }
+
     override suspend fun saveUser(user: User) {
         preferences.saveUser(user)
     }

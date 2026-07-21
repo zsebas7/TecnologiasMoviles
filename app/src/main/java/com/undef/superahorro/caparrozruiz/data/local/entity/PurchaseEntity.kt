@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "purchases")
 //representa una fila en la tabla de  purchases
-//purchaseEntity no llega a la UI, se convierte en Purchase abtes
+//purchaseEntity no llega a la UI, se convierte en Purchase antes
 data class PurchaseEntity(
     @PrimaryKey(autoGenerate = true)//se genera automaticamente la clave primaria
     val id: Long = 0,

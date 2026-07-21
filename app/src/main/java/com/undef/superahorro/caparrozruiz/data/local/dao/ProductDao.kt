@@ -33,4 +33,7 @@ interface ProductDao {
 
     @Query("DELETE FROM products WHERE purchase_id = :purchaseId")
     suspend fun deleteByPurchaseId(purchaseId: Long)
+
+    @Query("DELETE FROM products")
+    suspend fun deleteAll()
 }

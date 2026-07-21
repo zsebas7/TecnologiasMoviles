@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1091396710464",
+    "project_id": "superahorro-1b1cd",
+    "storage_bucket": "superahorro-1b1cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1091396710464:android:88cf3351d684bb01922fa5",
+        "android_client_info": {
+          "package_name": "com.undef.superahorro.caparrozruiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8gQSuZkfh6FFX5Grh6tz3YH_SCOfl0Bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

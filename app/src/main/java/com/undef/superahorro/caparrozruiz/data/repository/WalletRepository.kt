@@ -22,6 +22,7 @@ interface WalletRepository {
     suspend fun deletePurchase(purchaseId: Long)
     suspend fun updateProduct(purchaseId: Long, updated: Product)
     suspend fun deleteProduct(purchaseId: Long, productId: Long)
+    suspend fun clearAllPurchases()
     suspend fun saveUser(user: User)
     suspend fun setLoggedIn(loggedIn: Boolean)
     suspend fun setNotificationsEnabled(enabled: Boolean)

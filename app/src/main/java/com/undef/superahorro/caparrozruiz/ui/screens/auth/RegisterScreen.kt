@@ -55,6 +55,10 @@ fun RegisterScreen(
                 loading = uiState.isLoading,
                 onClick = { viewModel.register(onRegisterSuccess) }
             )
+            uiState.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
             TextButton(onClick = onBackToLogin) {
                 Text(text = stringResource(R.string.auth_back_to_login_action))
             }

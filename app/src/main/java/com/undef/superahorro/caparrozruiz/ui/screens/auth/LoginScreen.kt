@@ -50,6 +50,10 @@ fun LoginScreen(
                 loading = uiState.isLoading,
                 onClick = { viewModel.login(onLoginSuccess) }
             )
+            uiState.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
             TextButton(onClick = onForgotPasswordClick) {
                 Text(text = stringResource(R.string.auth_forgot_password_action))
             }
