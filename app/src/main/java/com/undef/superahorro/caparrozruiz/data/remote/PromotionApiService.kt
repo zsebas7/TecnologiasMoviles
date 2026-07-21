@@ -7,5 +7,5 @@ import retrofit2.http.Query
 //funciona como los DAOs, nosotros solo declaramos lo queremos, retrofit genera el codigo
 interface PromotionApiService {
     @GET("products")
-    suspend fun getPromotions(@Query("limit") limit: Int = 10): ProductsResponseDto //el json que devuelve el get se convierte en ProductsResponseDto
+    suspend fun getPromotions(@Query("limit") limit: Int = 10, @Query("skip") skip: Int = 0): ProductsResponseDto //el json que devuelve el get se convierte en ProductsResponseDto
 }
