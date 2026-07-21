@@ -39,7 +39,8 @@ class NewPurchaseViewModel : ViewModel() {
                 val computedTotal = products.sumOf { it.price * it.quantity }
                 _purchaseState.value = _purchaseState.value.copy(
                     products = products,
-                    computedTotal = computedTotal
+                    computedTotal = computedTotal,
+                    total = if (_purchaseState.value.total.isBlank() && computedTotal > 0.0) "%.2f".format(computedTotal) else _purchaseState.value.total
                 )
             }
         }
@@ -101,10 +102,10 @@ class NewPurchaseViewModel : ViewModel() {
         )
         viewModelScope.launch {
             repository.addDraftProduct(product)
-            val computedTotal = _purchaseState.value.products.sumOf { it.price * it.quantity }
+            val totalFromProducts = _purchaseState.value.products.sumOf { it.price * it.quantity } + (product.price * product.quantity)
             _purchaseState.value = _purchaseState.value.copy(
-                total = "%.2f".format(computedTotal),
-                computedTotal = computedTotal
+                total = "%.2f".format(totalFromProducts),
+                computedTotal = totalFromProducts
             )
             _productState.value = NewProductUiState()
             onAdded()
@@ -114,7 +115,8 @@ class NewPurchaseViewModel : ViewModel() {
     fun removeDraftProduct(productId: Long) {
         viewModelScope.launch {
             repository.removeDraftProduct(productId)
-            val computedTotal = _purchaseState.value.products.sumOf { it.price * it.quantity }
+            val remaining = _purchaseState.value.products.filter { it.id != productId }
+            val computedTotal = remaining.sumOf { it.price * it.quantity }
             _purchaseState.value = _purchaseState.value.copy(
                 total = if (computedTotal > 0.0) "%.2f".format(computedTotal) else "",
                 computedTotal = computedTotal
