@@ -150,10 +150,10 @@ class NewPurchaseViewModel : ViewModel() {
     }
 
     fun savePurchase(onSaved: () -> Unit) {
-        viewModelScope.launch {
-            _purchaseState.value = _purchaseState.value.copy(isSaving = true, saveError = null)
-            val totalValue = _purchaseState.value.total.toDoubleOrNull()
-                ?: _purchaseState.value.computedTotal
+        viewModelScope.launch { //abre una corrutina
+            _purchaseState.value = _purchaseState.value.copy(isSaving = true, saveError = null) //activa el estado de carga, muestra el spinner y limpia errores previos
+            val totalValue = _purchaseState.value.total.toDoubleOrNull()// el total que escribe el usuario es un string asi que lo pasa a double
+                ?: _purchaseState.value.computedTotal//si no escribe el total, lo calcula con la suma de los productos
             when {
                 _purchaseState.value.market.isBlank() -> {
                     _purchaseState.value = _purchaseState.value.copy(
@@ -171,15 +171,15 @@ class NewPurchaseViewModel : ViewModel() {
                 }
             }
             val purchase = Purchase(
-                id = 0,
+                id = 0, //Room ignora el 0 y genera automaticamente la id correspondiente
                 market = _purchaseState.value.market,
                 date = _purchaseState.value.date,
                 time = _purchaseState.value.time,
                 total = totalValue,
                 ticketUri = _purchaseState.value.ticketUri
             )
-            repository.addPurchase(purchase, _purchaseState.value.products)
-            val notificationsEnabled = repository.observeNotificationsEnabled().first()
+            repository.addPurchase(purchase, _purchaseState.value.products) //guardar la compra en Room
+            val notificationsEnabled = repository.observeNotificationsEnabled().first() //se fija en el dataStore si el user tiene las notificaciones activadas
             if (notificationsEnabled) {
                 AppContainer.notificationHelper.showPurchaseSaved(purchase.market, totalValue)
             }

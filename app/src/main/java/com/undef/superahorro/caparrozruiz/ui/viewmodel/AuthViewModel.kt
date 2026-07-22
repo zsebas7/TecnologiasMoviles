@@ -46,19 +46,24 @@ class AuthViewModel : ViewModel() {
     }
 
     fun login(onSuccess: () -> Unit) {
+        //caso login cuenta existente
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
+                //firebase devuelve el resultado del login, que incluye al usuario autenticado
                 val result = auth.signInWithEmailAndPassword(
                     _uiState.value.email.trim(),
                     _uiState.value.password
                 ).await()
-                val uid = result.user?.uid
+                //cargar perfil desde firestore
+                val uid = result.user?.uid //se obtiene el uid del user que inicia sesion
                 if (uid != null) {
+                    //se buscan los datos de ese uid
                     val doc = firestore.collection("users").document(uid).get().await()
                     repository.clearAllPurchases()
                     repository.saveUser(
                         User(
+                            //se extraen los datos del usuario para poder mostrar bien la info, por ejemplo: en el Hola, (nombre)
                             name = doc.getString("name") ?: "",
                             email = doc.getString("email") ?: _uiState.value.email.trim(),
                             city = doc.getString("city") ?: ""
@@ -71,22 +76,25 @@ class AuthViewModel : ViewModel() {
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = mapFirebaseError(e)
+                    errorMessage = mapFirebaseError(e) //para devolver el mensaje de error correcto
                 )
             }
         }
     }
 
     fun register(onSuccess: () -> Unit) {
+        //caso registrar nueva cuenta
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
+                //auth es una instancia de FirebaseAuth, se le pide a Firebase que cree el usuario con mail y contraseña
+                //.await() suspende la corrutina hasta que firebase respodna
                 val result = auth.createUserWithEmailAndPassword(
                     _uiState.value.email.trim(),
                     _uiState.value.password
                 ).await()
                 val uid = result.user?.uid ?: return@launch
-                // Guardar perfil en Firestore (base de datos en la nube)
+                //guardar perfil en Firestore (base de datos en la nube)
                 firestore.collection("users").document(uid).set(
                     mapOf(
                         "name" to _uiState.value.name,
@@ -94,7 +102,7 @@ class AuthViewModel : ViewModel() {
                         "city" to ""
                     )
                 ).await()
-                // Limpiar datos del usuario anterior y guardar el nuevo perfil localmente
+                //limpiar datos del usuario anterior y guardar el nuevo perfil localmente
                 repository.clearAllPurchases()
                 repository.saveUser(
                     User(
@@ -105,10 +113,11 @@ class AuthViewModel : ViewModel() {
                 )
                 repository.setLoggedIn(true)
                 _uiState.value = _uiState.value.copy(isLoading = false)
-                onSuccess()
+                onSuccess()//navegar al home
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
+                    //en caso de haber un error busca el mensaje de error correcto
                     errorMessage = mapFirebaseError(e)
                 )
             }
@@ -131,6 +140,7 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun mapFirebaseError(e: Exception): String = when (e) {
+        //distintos casos de error
         is FirebaseAuthInvalidCredentialsException -> "Email o contraseña incorrectos"
         is FirebaseAuthUserCollisionException -> "Ya existe una cuenta con ese email"
         is FirebaseAuthWeakPasswordException -> "La contraseña debe tener al menos 6 caracteres"

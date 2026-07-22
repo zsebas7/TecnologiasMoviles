@@ -24,7 +24,7 @@ class PromotionsRepository(
 
     suspend fun refreshPromotions(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            val randomSkip = (0..90).random()
+            val randomSkip = (0..90).random()//para que cuando el user toque para actualizar se muestren resultados distintos
             val response = apiService.getPromotions(skip = randomSkip) //llama a la API
             val entities = response.products.map { it.toDomain().toEntity() }//convierte DTO a Entity
             promotionDao.deleteAll() //limpia caché vieja

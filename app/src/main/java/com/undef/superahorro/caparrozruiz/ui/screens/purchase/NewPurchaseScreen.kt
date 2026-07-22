@@ -200,6 +200,7 @@ fun NewPurchaseScreen(
         }
 
         PrimaryButton(
+            //boton para confirmar la compra
             text = stringResource(R.string.purchase_new_save_button),
             loading = uiState.isSaving,
             onClick = { viewModel.savePurchase(onSaved) }

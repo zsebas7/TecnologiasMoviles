@@ -9,7 +9,7 @@ import com.undef.superahorro.caparrozruiz.R
 class NotificationHelper(private val context: Context) {
 
     companion object {
-        const val CHANNEL_ID = "purchases_channel"
+        const val CHANNEL_ID = "purchases_channel" //ID del canal, el canal se registra en SuperAhorroApplication al iniciar la app
     }
 
     fun createChannel() {
@@ -31,6 +31,6 @@ class NotificationHelper(private val context: Context) {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .build()
-        manager.notify(System.currentTimeMillis().toInt(), notification)
+        manager.notify(System.currentTimeMillis().toInt(), notification) //para que cada notificacion sea unica y no sobreescriba otras
     }
 }

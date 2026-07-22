@@ -53,7 +53,9 @@ fun RegisterScreen(
             PrimaryButton(
                 text = stringResource(R.string.auth_register_button),
                 loading = uiState.isLoading,
+                //boton de cuando se registra correctamente
                 onClick = { viewModel.register(onRegisterSuccess) }
+
             )
             uiState.errorMessage?.let { error ->
                 Spacer(modifier = Modifier.height(8.dp))
