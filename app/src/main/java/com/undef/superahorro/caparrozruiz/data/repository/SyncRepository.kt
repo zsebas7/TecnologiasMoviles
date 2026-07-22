@@ -13,6 +13,11 @@ class SyncRepository {
     suspend fun syncPurchases(purchases: List<SyncPurchaseItemDto>): String = withContext(Dispatchers.IO) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
             ?: return@withContext "Error: usuario no autenticado"
+        val purchasesRef = firestore.collection("users").document(uid).collection("purchases")
+        val existing = purchasesRef.get().await()
+        for (doc in existing.documents) {
+            doc.reference.delete().await()
+        }
         var count = 0
         for (purchase in purchases) {
             val data = hashMapOf(
@@ -29,8 +34,7 @@ class SyncRepository {
                 }
             )
             val docId = purchase.id.toString()
-            firestore.collection("users").document(uid)
-                .collection("purchases").document(docId).set(data).await()
+            purchasesRef.document(docId).set(data).await()
             count++
         }
         "Sync ok: $count compras sincronizadas a la nube"
