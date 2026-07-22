@@ -49,10 +49,22 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
-                auth.signInWithEmailAndPassword(
+                val result = auth.signInWithEmailAndPassword(
                     _uiState.value.email.trim(),
                     _uiState.value.password
                 ).await()
+                val uid = result.user?.uid
+                if (uid != null) {
+                    val doc = firestore.collection("users").document(uid).get().await()
+                    repository.clearAllPurchases()
+                    repository.saveUser(
+                        User(
+                            name = doc.getString("name") ?: "",
+                            email = doc.getString("email") ?: _uiState.value.email.trim(),
+                            city = doc.getString("city") ?: ""
+                        )
+                    )
+                }
                 repository.setLoggedIn(true)
                 _uiState.value = _uiState.value.copy(isLoading = false)
                 onSuccess()

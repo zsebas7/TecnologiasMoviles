@@ -2,6 +2,7 @@ package com.undef.superahorro.caparrozruiz.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.undef.superahorro.caparrozruiz.core.AppContainer
 import com.undef.superahorro.caparrozruiz.data.dto.SyncProductDto
 import com.undef.superahorro.caparrozruiz.data.dto.SyncPurchaseItemDto
@@ -82,6 +83,8 @@ class SettingsViewModel : ViewModel() {
 
     fun logout(onLogoutFinished: () -> Unit) {
         viewModelScope.launch {
+            FirebaseAuth.getInstance().signOut()
+            repository.clearAllPurchases()
             repository.setLoggedIn(false)
             onLogoutFinished()
         }

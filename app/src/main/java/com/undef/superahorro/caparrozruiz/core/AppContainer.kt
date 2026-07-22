@@ -19,6 +19,9 @@ object AppContainer {
     lateinit var database: AppDatabase
         private set
 
+    lateinit var notificationHelper: NotificationHelper
+        private set
+
     fun initialize(context: Context) {
         val appContext = context.applicationContext
         database = AppDatabase.getDatabase(appContext)//base de datos
@@ -32,5 +35,6 @@ object AppContainer {
             apiService = RetrofitClient.ocrApiService,
             contentResolver = appContext.contentResolver
         )
+        notificationHelper = NotificationHelper(appContext)
     }
 }

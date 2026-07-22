@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.undef.superahorro.caparrozruiz.core.AppContainer
 import com.undef.superahorro.caparrozruiz.data.model.Product
+import kotlinx.coroutines.flow.first
 import com.undef.superahorro.caparrozruiz.data.model.Purchase
 import com.undef.superahorro.caparrozruiz.ui.state.NewProductUiState
 import com.undef.superahorro.caparrozruiz.ui.state.NewPurchaseUiState
@@ -178,6 +179,10 @@ class NewPurchaseViewModel : ViewModel() {
                 ticketUri = _purchaseState.value.ticketUri
             )
             repository.addPurchase(purchase, _purchaseState.value.products)
+            val notificationsEnabled = repository.observeNotificationsEnabled().first()
+            if (notificationsEnabled) {
+                AppContainer.notificationHelper.showPurchaseSaved(purchase.market, totalValue)
+            }
             _purchaseState.value = NewPurchaseUiState(
                 date = LocalDate.now().format(dateFormatter),
                 time = LocalTime.now().format(timeFormatter)
