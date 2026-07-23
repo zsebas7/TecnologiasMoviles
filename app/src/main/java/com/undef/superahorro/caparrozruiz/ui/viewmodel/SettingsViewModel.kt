@@ -57,7 +57,7 @@ class SettingsViewModel : ViewModel() {
                 //.first() toma el valor actual del Flow sin quedarse suscripto
 
                 //armar los DTOs
-                //convierte los objetos Purchase y Product a objetos dise!nados para ser enviados a la API/Firestore
+                //convierte los objetos Purchase y Product a objetos diseñados para ser enviados a la API/Firestore
                 val syncItems = purchases.map { purchase ->
                     SyncPurchaseItemDto(
                         id = purchase.id,

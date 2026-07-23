@@ -4,7 +4,7 @@ Aplicación Android (Jetpack Compose) para registrar, consultar y analizar compr
 
 ## Objetivo académico
 
-Proyecto de la materia Aplicaciones Móviles (IUA). Integra los temas de las dos primeras entregas:
+Proyecto de la materia Aplicaciones Móviles (IUA). Integra los temas de las tres entregas:
 
 - Activities y ciclo de vida.
 - Intents explícitos e implícitos (email, cámara, galería, compartir).
@@ -13,6 +13,9 @@ Proyecto de la materia Aplicaciones Móviles (IUA). Integra los temas de las dos
 - Corrutinas con `viewModelScope`, `Flow`, `StateFlow`, `combine`.
 - Persistencia con DataStore (preferencias) y Room (base de datos local).
 - Networking con Retrofit y patrón offline-first.
+- Autenticación y base de datos en la nube con Firebase Authentication y Firestore.
+- Notificaciones locales con `NotificationManager` y `NotificationChannel`.
+- Soporte multi-cuenta en el mismo dispositivo.
 - Internacionalización (`strings.xml` en español e inglés).
 - Versionado con GitFlow.
 
@@ -28,6 +31,9 @@ Proyecto de la materia Aplicaciones Móviles (IUA). Integra los temas de las dos
 | Networking | Retrofit + Gson |
 | IA / Chat | Gemini API (generativelanguage.googleapis.com) |
 | OCR | OCR.space API |
+| Autenticación | Firebase Authentication (email/password) |
+| Base de datos en la nube | Firebase Firestore |
+| Notificaciones | NotificationManager + NotificationChannel (locales) |
 | Concurrencia | Kotlin Coroutines |
 | Lenguaje | Kotlin (JVM 11, minSdk 29, compileSdk 36) |
 
@@ -65,11 +71,23 @@ Proyecto de la materia Aplicaciones Móviles (IUA). Integra los temas de las dos
 - `data/repository/DefaultWalletRepository.kt` — mapea `Entity ↔ Domain` y expone Flows a los ViewModels.
 
 ### Networking (Retrofit + offline-first)
-- `data/remote/RetrofitClient.kt` — instancias de Retrofit para cuatro endpoints: dummyjson.com (promociones), jsonplaceholder.typicode.com (sincronización), api.ocr.space (OCR) y generativelanguage.googleapis.com (Gemini).
+- `data/remote/RetrofitClient.kt` — instancias de Retrofit para tres endpoints: dummyjson.com (promociones), api.ocr.space (OCR) y generativelanguage.googleapis.com (Gemini).
 - `data/remote/PromotionApiService.kt` — `@GET("products") suspend fun getPromotions(limit: Int)`.
 - `data/repository/PromotionsRepository.kt` — patrón offline-first: emite la caché de Room inmediatamente vía `observePromotions(): Flow`, luego refresca desde la API con `refreshPromotions()` en `Dispatchers.IO`.
 - `data/remote/OcrApiService.kt` + `data/repository/OcrRepository.kt` — sube imagen y parsea texto de ticket.
 - `data/remote/GeminiApiService.kt` + `data/repository/ChatRepository.kt` — chat con IA usando el modelo Gemma 4 26B.
+
+### Firebase (Authentication + Firestore)
+- `ui/viewmodel/AuthViewModel.kt` — `login()` valida contra Firebase Auth y carga el perfil desde Firestore; `register()` crea el usuario en Auth y guarda el perfil en Firestore bajo `users/{uid}`.
+- `data/repository/SyncRepository.kt` — sincroniza las compras locales de Room a Firestore bajo `users/{uid}/purchases`; borra el estado anterior antes de subir para evitar duplicados.
+- `ui/viewmodel/SettingsViewModel.kt` — `logout()` llama a `FirebaseAuth.signOut()` y limpia Room.
+- Multi-cuenta: Room se limpia en cada login, registro y logout para que cada usuario solo vea sus propias compras.
+
+### Notificaciones locales
+- `core/NotificationHelper.kt` — crea el canal `purchases_channel` y lanza la notificación con `NotificationCompat.Builder`.
+- `SuperAhorroApplication.kt` — registra el canal al iniciar la app con `createChannel()`.
+- `MainActivity.kt` — solicita el permiso `POST_NOTIFICATIONS` en runtime (Android 13+).
+- `ui/viewmodel/NewPurchaseViewModel.kt` — después de guardar una compra, consulta DataStore y dispara la notificación si el usuario la tiene habilitada.
 
 ### Corrutinas
 - Todos los ViewModels usan `viewModelScope.launch` para operaciones asíncronas.
@@ -102,7 +120,8 @@ Las pantallas están en `ui/screens/`.
 ```
 app/src/main/java/com/undef/superahorro/caparrozruiz/
 ├── core/
-│   └── AppContainer.kt              # Inyección de dependencias manual (singleton)
+│   ├── AppContainer.kt              # Inyección de dependencias manual (singleton)
+│   └── NotificationHelper.kt        # Canal y construcción de notificaciones locales
 ├── data/
 │   ├── dto/                         # Data Transfer Objects (respuestas de API)
 │   ├── local/

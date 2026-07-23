@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    //le pregunta al usuario si permtie recibir notifiacion o no
     private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
